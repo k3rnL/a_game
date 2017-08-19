@@ -17,11 +17,13 @@ uniform vec3 light_pos;
 uniform mat4 model_rotation; // Camera view
 uniform mat4 model_view;
 
-uniform struct MaterialData
+struct MaterialData
 {
               vec3  diffuse_color;
               int   diffuse_map;
-}              mt_data;
+};
+
+uniform MaterialData mt_data;
 
 uniform sampler2D diffuse_map;
 

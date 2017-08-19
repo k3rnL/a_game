@@ -2,7 +2,7 @@
  * @Author: danielb
  * @Date:   2017-07-22T23:35:22+02:00
  * @Last modified by:   daniel_b
- * @Last modified time: 2017-08-03T22:13:30+02:00
+ * @Last modified time: 2017-08-19T17:56:19+02:00
  */
 
 #include "Window.hpp"
@@ -11,18 +11,19 @@
 #include "Triangle.hpp"
 #include "Scene/Object/Wavefront.hpp"
 #include "Scene/SceneManager.hpp"
+#include "Scene/CameraFPS.hpp"
 
 using namespace mxe::scene::object;
 
 void    generate_world(mxe::scene::SceneManager &scene, ObjectList &objs)
 {
-    for (int x = -20 ; x < 20 ; x++)
-        for (int z = -20 ; z < 20 ; z++)
+    for (int x = -5 ; x < 5 ; x++)
+        for (int z = -5 ; z < 5 ; z++)
         {
             Wavefront *cube = scene.addWavefront("Ressource/cube.obj");
-            cube->position[0] = x;
-            cube->position[2] = z;
-            // cube->getMaterial().setTexture("Ressource/grass.jpg");
+            cube->getPosition()[0] = x;
+            cube->getPosition()[2] = z;
+            cube->getMaterial().setTexture("Ressource/grass.jpg");
             objs.push_back(cube);
         }
 }
@@ -32,12 +33,16 @@ int main()
     Window                      window;
     mxe::Renderer               renderer(window);
     mxe::scene::SceneManager    scene;
+    mxe::scene::CameraFPS       camera;
     ObjectList                  objects;
     float speed = 4.f; // 3 units / second
-    float mouseSpeed = 0.25;
 
-    Wavefront wavefront("Ressource/cube.obj");
-    wavefront.getMaterial().setTexture("Ressource/alduin.bmp");
+    scene.camera = &camera;
+    camera.getPosition()[2] = 10;
+    camera.mouseInput(0, 0, 0);
+
+    Wavefront *wavefront = scene.addWavefront("Ressource/cube.obj");
+    wavefront->getMaterial().setTexture("Ressource/alduin.bmp");
 
 
     Wavefront wavefront2("Ressource/teapot.obj");
@@ -47,68 +52,54 @@ int main()
     for (int i = 0 ; i < 0 ; i++)
     {
       Wavefront *w = scene.addWavefront("Ressource/alduin.obj");
-      w->position[0] = rand() % 100 - 50;
-      w->position[1] = rand() % 100;
-      w->position[2] = rand() % 100 - 50;
-      w->getMaterial().setTexture("Ressource/alduin.bmp");
+      w->getPosition()[0] = rand() % 100 - 50;
+      w->getPosition()[1] = rand() % 100;
+      w->getPosition()[2] = rand() % 100 - 50;
+      // w->getMaterial().setTexture("Ressource/alduin.bmp");
       objects.push_back(w);
     }
 
-    // generate_world(scene, objects);
+    generate_world(scene, objects);
 
-    wavefront.position.y += 1;
-    wavefront.rotation.y += 90;
+    wavefront->getPosition().y += 1;
+    wavefront->getRotation().y += 90;
 
     // objects.push_back(&triangle);
-    objects.push_back(&wavefront);
     objects.push_back(&wavefront2);
 
     while (1)
     {
-        renderer.render(objects);
+        renderer.render(scene);
 
         float   move_handle = 1. / renderer.fps.getFrameRate();
 
-        wavefront.rotation.y += 1 * move_handle;
+        wavefront->getRotation().y += 1 * move_handle;
 
         SDL_Event event;
         while (window.pollEvent(event))
         {
             if (event.type == SDL_KEYDOWN)
             {
-              glm::vec3 direction(
-                cos(renderer.verticalAngle) * sin(renderer.horizontalAngle),
-                sin(renderer.verticalAngle),
-                cos(renderer.verticalAngle) * cos(renderer.horizontalAngle));
+              glm::vec3 direction = camera.getDirection();
 
-                direction = glm::normalize(direction);
-
-                if (event.key.keysym.sym == SDLK_q)
-                    renderer.horizontalAngle += speed * (move_handle);
-                if (event.key.keysym.sym == SDLK_d)
-                    renderer.horizontalAngle -= speed * (move_handle);
-                if (event.key.keysym.sym == SDLK_LSHIFT)
-                  renderer.verticalAngle -= speed * (move_handle);
-                if (event.key.keysym.sym == SDLK_LCTRL)
-                  renderer.verticalAngle += speed * (move_handle);
                 if (event.key.keysym.sym == SDLK_z)
-                    renderer.camPos += glm::vec3(speed) * direction * glm::vec3(move_handle);
+                  camera.getPosition() += glm::vec3(speed) * direction * glm::vec3(move_handle);
                 if (event.key.keysym.sym == SDLK_s)
-                  renderer.camPos -= glm::vec3(speed) * direction * glm::vec3(move_handle);
+                  camera.getPosition() -= glm::vec3(speed) * direction * glm::vec3(move_handle);
                 if (event.key.keysym.sym == SDLK_ESCAPE)
                     {
                         window.close();
                         return (0);
                     }
+                camera.mouseInput(0, 0, move_handle);
+
             }
 
             if (event.type == SDL_MOUSEMOTION)
             {
                 int xpos = 0, ypos = 0;
                 SDL_GetRelativeMouseState(&xpos, &ypos);
-
-                renderer.horizontalAngle += mouseSpeed * (move_handle) * -xpos;
-                renderer.verticalAngle   += mouseSpeed * (move_handle) * -ypos;
+                camera.mouseInput(xpos, ypos, move_handle);
             }
         } // end event polling
     }
