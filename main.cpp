@@ -2,7 +2,7 @@
  * @Author: danielb
  * @Date:   2017-07-22T23:35:22+02:00
  * @Last modified by:   daniel_b
- * @Last modified time: 2017-08-20T23:50:06+02:00
+ * @Last modified time: 2017-08-21T00:59:16+02:00
  */
 
 #include "Window.hpp"
@@ -81,7 +81,7 @@ int main()
     while (1)
     {
         renderer.render(scene);
-
+        
         float   move_handle = 1. / renderer.fps.getFrameRate();
 
         wavefront->getRotation().y += 1 * move_handle;
