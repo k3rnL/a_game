@@ -21,7 +21,7 @@ void main(){
     // compute true position of actual vertex and pass it to fragment shader
     to_shade_vertex = (model_view * vec4(vertex, 1)).xyz;
     normal_input = vertex_normal;
-    // vector_to_camera = camera_position - (model_view * vec4(vertex, 1)).xyz;
+
     vector_to_camera = camera_position - to_shade_vertex;
     vector_to_camera = normalize(vector_to_camera);
 

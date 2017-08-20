@@ -47,7 +47,7 @@ void main(){
   else
     color = mat_color * angle;
 
-  vec3 vector_light_reflected = normalize(reflect(-light_vector, normal));
+  vec3 vector_light_reflected = reflect(-light_vector, normal);
   angle = clamp(dot(vector_light_reflected, vector_to_camera), 0.0, 0.6);
   angle = pow(1.5, angle);
 

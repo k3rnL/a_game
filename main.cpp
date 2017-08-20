@@ -2,7 +2,7 @@
  * @Author: danielb
  * @Date:   2017-07-22T23:35:22+02:00
  * @Last modified by:   daniel_b
- * @Last modified time: 2017-08-19T17:56:19+02:00
+ * @Last modified time: 2017-08-20T23:50:06+02:00
  */
 
 #include "Window.hpp"
@@ -13,20 +13,31 @@
 #include "Scene/SceneManager.hpp"
 #include "Scene/CameraFPS.hpp"
 
+#include <chrono>
+
 using namespace mxe::scene::object;
 
 void    generate_world(mxe::scene::SceneManager &scene, ObjectList &objs)
 {
-    for (int x = -5 ; x < 5 ; x++)
-        for (int z = -5 ; z < 5 ; z++)
-        {
-            Wavefront *cube = scene.addWavefront("Ressource/cube.obj");
-            cube->getPosition()[0] = x;
-            cube->getPosition()[2] = z;
-            cube->getMaterial().setTexture("Ressource/grass.jpg");
-            objs.push_back(cube);
-        }
+  std::shared_ptr<Material>   mat = std::make_shared<Material>();
+  mat->setTexture("Ressource/grass.jpg");
+  std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+  for (int x = -50 ; x < 50 ; x++)
+  for (int z = -50 ; z < 50 ; z++)
+  {
+    Wavefront *cube = scene.addWavefront("Ressource/cube.obj");
+    cube->getPosition()[0] = x;
+    cube->getPosition()[2] = z;
+    cube->applyMaterial(mat);
+    objs.push_back(cube);
+  }
+  std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+
+  auto duration = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
+
+  std::cout << "Loading time : " << duration / 1000000 << "s" << duration % 1000000 << "ms\n";
 }
+
 
 int main()
 {
@@ -42,14 +53,14 @@ int main()
     camera.mouseInput(0, 0, 0);
 
     Wavefront *wavefront = scene.addWavefront("Ressource/cube.obj");
-    wavefront->getMaterial().setTexture("Ressource/alduin.bmp");
+    wavefront->getMaterial()->setTexture("Ressource/alduin.bmp");
 
 
     Wavefront wavefront2("Ressource/teapot.obj");
     // Triangle triangle(glm::vec3(-1, 1, 0), glm::vec3(1, 1, 0), glm::vec3(0, 0, 0));
     // Wavefront wavefront("/home/daniel_b/gfx_raytracer2/Wavefront/cow.obj");
 
-    for (int i = 0 ; i < 0 ; i++)
+    for (int i = 0 ; i < 000 ; i++)
     {
       Wavefront *w = scene.addWavefront("Ressource/alduin.obj");
       w->getPosition()[0] = rand() % 100 - 50;
