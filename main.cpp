@@ -2,7 +2,7 @@
  * @Author: danielb
  * @Date:   2017-07-22T23:35:22+02:00
  * @Last modified by:   daniel_b
- * @Last modified time: 2017-08-21T00:59:16+02:00
+ * @Last modified time: 2017-08-30T05:28:00+02:00
  */
 
 #include "Window.hpp"
@@ -17,19 +17,19 @@
 
 using namespace mxe::scene::object;
 
-void    generate_world(mxe::scene::SceneManager &scene, ObjectList &objs)
+void    generate_world(mxe::scene::SceneManager &scene)
 {
   std::shared_ptr<Material>   mat = std::make_shared<Material>();
   mat->setTexture("Ressource/grass.jpg");
+  mat->setColor(0.1, 0.5, 1);
   std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
   for (int x = -50 ; x < 50 ; x++)
+  for (int y = -1 ; y < 0 ; y++)
   for (int z = -50 ; z < 50 ; z++)
   {
     Wavefront *cube = scene.addWavefront("Ressource/cube.obj");
-    cube->getPosition()[0] = x;
-    cube->getPosition()[2] = z;
+    cube->setPosition({x, y , z});
     cube->applyMaterial(mat);
-    objs.push_back(cube);
   }
   std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
 
@@ -45,18 +45,17 @@ int main()
     mxe::Renderer               renderer(window);
     mxe::scene::SceneManager    scene;
     mxe::scene::CameraFPS       camera;
-    ObjectList                  objects;
     float speed = 4.f; // 3 units / second
 
     scene.camera = &camera;
     camera.getPosition()[2] = 10;
     camera.mouseInput(0, 0, 0);
 
-    Wavefront *wavefront = scene.addWavefront("Ressource/cube.obj");
-    wavefront->getMaterial()->setTexture("Ressource/alduin.bmp");
+    // Wavefront *wavefront = scene.addWavefront("Ressource/cube.obj");
+    // wavefront->getMaterial()->setTexture("Ressource/alduin.bmp");
 
 
-    Wavefront wavefront2("Ressource/teapot.obj");
+    // Wavefront wavefront2("Ressource/teapot.obj");
     // Triangle triangle(glm::vec3(-1, 1, 0), glm::vec3(1, 1, 0), glm::vec3(0, 0, 0));
     // Wavefront wavefront("/home/daniel_b/gfx_raytracer2/Wavefront/cow.obj");
 
@@ -67,24 +66,23 @@ int main()
       w->getPosition()[1] = rand() % 100;
       w->getPosition()[2] = rand() % 100 - 50;
       // w->getMaterial().setTexture("Ressource/alduin.bmp");
-      objects.push_back(w);
     }
 
-    generate_world(scene, objects);
+    generate_world(scene);
 
-    wavefront->getPosition().y += 1;
-    wavefront->getRotation().y += 90;
+    // wavefront->getPosition().y += 1;
+    // wavefront->getRotation().y += 90;
 
     // objects.push_back(&triangle);
-    objects.push_back(&wavefront2);
+    // objects.push_back(&wavefront2);
 
     while (1)
     {
         renderer.render(scene);
-        
+
         float   move_handle = 1. / renderer.fps.getFrameRate();
 
-        wavefront->getRotation().y += 1 * move_handle;
+        // wavefront->getRotation().y += 1 * move_handle;
 
         SDL_Event event;
         while (window.pollEvent(event))

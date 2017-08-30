@@ -8,7 +8,8 @@ layout(location = 2) in vec2 vertex_uv;
 // Values that stay constant for the whole mesh.
 uniform mat4 projection; // Projected view
 uniform mat4 view;
-uniform mat4 model_view; // Camera view
+// layout(location = 12) in mat4 model_view; // Camera view
+uniform mat4 model_view;
 uniform vec3 camera_position;
 
 out vec3 to_shade_vertex;
