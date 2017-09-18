@@ -2,7 +2,7 @@
  * @Author: danielb
  * @Date:   2017-07-22T23:35:22+02:00
  * @Last modified by:   daniel_b
- * @Last modified time: 2017-09-18T17:13:11+02:00
+ * @Last modified time: 2017-09-18T23:01:32+02:00
  */
 
 #include "Window.hpp"
