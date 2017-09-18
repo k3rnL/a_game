@@ -15,8 +15,6 @@ in vec3 to_shade_vertex;
 
 uniform vec3 light_pos;
 
-uniform vec3 map_size;
-
 in mat4 model_view; // Camera view
 
 struct MaterialData
@@ -58,7 +56,6 @@ void main(){
   else
   {
     // albedo = vec3(texture(diffuse_map, uv)) * angle;
-    vec2 uv_transposed(uv);
     albedo = vec3(texture(diffuse_map, uv));
   }
   color = albedo * angle;
