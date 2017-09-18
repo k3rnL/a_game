@@ -2,7 +2,7 @@
  * @Author: danielb
  * @Date:   2017-07-22T23:35:22+02:00
  * @Last modified by:   daniel_b
- * @Last modified time: 2017-08-30T05:28:00+02:00
+ * @Last modified time: 2017-09-16T02:14:32+02:00
  */
 
 #include "Window.hpp"
@@ -12,6 +12,8 @@
 #include "Scene/Object/Wavefront.hpp"
 #include "Scene/SceneManager.hpp"
 #include "Scene/CameraFPS.hpp"
+
+#include "Map.hpp"
 
 #include <chrono>
 
@@ -27,7 +29,7 @@ void    generate_world(mxe::scene::SceneManager &scene)
   for (int y = -1 ; y < 0 ; y++)
   for (int z = -50 ; z < 50 ; z++)
   {
-    Wavefront *cube = scene.addWavefront("Ressource/cube.obj");
+    Object *cube = scene.addWavefront("Ressource/cube.obj");
     cube->setPosition({x, y , z});
     cube->applyMaterial(mat);
   }
@@ -41,7 +43,7 @@ void    generate_world(mxe::scene::SceneManager &scene)
 
 int main()
 {
-    Window                      window;
+    Window                      window(1540, 960);
     mxe::Renderer               renderer(window);
     mxe::scene::SceneManager    scene;
     mxe::scene::CameraFPS       camera;
@@ -49,26 +51,38 @@ int main()
 
     scene.camera = &camera;
     camera.getPosition()[2] = 10;
+    camera.getPosition()[1] = 10;
     camera.mouseInput(0, 0, 0);
 
-    // Wavefront *wavefront = scene.addWavefront("Ressource/cube.obj");
-    // wavefront->getMaterial()->setTexture("Ressource/alduin.bmp");
+    // Object *wavefront = scene.addWavefront("Ressource/Audi R8.fbx");
+    // wavefront->setScale({0.05, 0.05, 0.05});
+    // // wavefront->getMaterial()->setTexture("Ressource/alduin.bmp");
+    // wavefront->getMaterial()->setColor(0.5, 0.5, 0.5);
 
+    Object *wavefront = scene.addWavefront("Ressource/alduin.obj");
+    wavefront->setScale({0.005, 0.005, 0.005});
+    wavefront->getMaterial()->setTexture("Ressource/alduin.bmp");
+
+    size_t size = 20;
+    game::Map *map = new game::Map(size, size, 10);
+    // map->setPosition({-size / 2, 0, -size / 2});
+    map->getMaterial()->setTexture("Ressource/grass_terrain.jpg");
+    scene.addChild(map);
 
     // Wavefront wavefront2("Ressource/teapot.obj");
     // Triangle triangle(glm::vec3(-1, 1, 0), glm::vec3(1, 1, 0), glm::vec3(0, 0, 0));
     // Wavefront wavefront("/home/daniel_b/gfx_raytracer2/Wavefront/cow.obj");
 
-    for (int i = 0 ; i < 000 ; i++)
+    for (int i = 0 ; i < 00 ; i++)
     {
-      Wavefront *w = scene.addWavefront("Ressource/alduin.obj");
+      Object *w = scene.addWavefront("Ressource/alduin.obj");
       w->getPosition()[0] = rand() % 100 - 50;
       w->getPosition()[1] = rand() % 100;
       w->getPosition()[2] = rand() % 100 - 50;
       // w->getMaterial().setTexture("Ressource/alduin.bmp");
     }
 
-    generate_world(scene);
+    // generate_world(scene);
 
     // wavefront->getPosition().y += 1;
     // wavefront->getRotation().y += 90;
@@ -80,7 +94,7 @@ int main()
     {
         renderer.render(scene);
 
-        float   move_handle = 1. / renderer.fps.getFrameRate();
+        float   move_handle = 1. / renderer.getFrameCounter().getFrameRate();
 
         // wavefront->getRotation().y += 1 * move_handle;
 
@@ -100,6 +114,9 @@ int main()
                         window.close();
                         return (0);
                     }
+                if (event.key.keysym.sym == SDLK_SPACE) {
+                    map->randomize();
+                }
                 camera.mouseInput(0, 0, move_handle);
 
             }
