@@ -2,7 +2,7 @@
  * @Author: danielb
  * @Date:   2017-07-22T23:35:22+02:00
  * @Last modified by:   daniel_b
- * @Last modified time: 2017-09-18T23:01:32+02:00
+ * @Last modified time: 2017-09-20T02:06:19+02:00
  */
 
 #include "Window.hpp"
@@ -22,7 +22,7 @@ using namespace mxe::scene::object;
 void    generate_world(mxe::scene::SceneManager &scene)
 {
   std::shared_ptr<Material>   mat = std::make_shared<Material>();
-  mat->setTexture("Ressource/grass.jpg");
+  mat->setTexture("Ressource/grass_terrain.jpg");
   mat->setColor(0.1, 0.5, 1);
   std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
   for (int x = -50 ; x < 50 ; x++)
@@ -59,9 +59,6 @@ int main()
     // // wavefront->getMaterial()->setTexture("Ressource/alduin.bmp");
     // wavefront->getMaterial()->setColor(0.5, 0.5, 0.5);
 
-    Object *wavefront = scene.addWavefront("Ressource/alduin.obj");
-    wavefront->setScale({0.005, 0.005, 0.005});
-    wavefront->getMaterial()->setTexture("Ressource/alduin.bmp");
 
     size_t size = 2;
     game::Map *map = new game::Map(size, size, 10);
@@ -70,6 +67,9 @@ int main()
     map->getMaterial()->setTexture("Ressource/grass_terrain.jpg");
     scene.addChild(map);
 
+    Object *wavefront = scene.addWavefront("Ressource/alduin.obj");
+    wavefront->setScale({0.005, 0.005, 0.005});
+    wavefront->getMaterial()->setTexture("Ressource/alduin.bmp");
     // Wavefront wavefront2("Ressource/teapot.obj");
     // Triangle triangle(glm::vec3(-1, 1, 0), glm::vec3(1, 1, 0), glm::vec3(0, 0, 0));
     // Wavefront wavefront("/home/daniel_b/gfx_raytracer2/Wavefront/cow.obj");
