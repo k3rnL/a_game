@@ -56,7 +56,7 @@ void main(){
   else
   {
     // albedo = vec3(texture(diffuse_map, uv)) * angle;
-    albedo = vec3(texture(diffuse_map, uv));
+    albedo = vec3(texture(diffuse_map, uv * 10));
   }
   color = albedo * angle;
   return;
