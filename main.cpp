@@ -2,7 +2,7 @@
  * @Author: danielb
  * @Date:   2017-07-22T23:35:22+02:00
  * @Last modified by:   daniel_b
- * @Last modified time: 2017-11-07T10:23:38+01:00
+ * @Last modified time: 2017-11-08T23:00:23+01:00
  */
 
 #include "Window.hpp"
@@ -59,11 +59,9 @@ int main()
     // // wavefront->getMaterial()->setTexture("Ressource/alduin.bmp");
     // wavefront->getMaterial()->setColor(0.5, 0.5, 0.5);
 
-
     size_t size = 2;
-    game::Map *map = new game::Map(size, size, 10);
+    game::Map *map = new game::Map(scene, size, size, 10);
     // map->setPosition({-size / 2, 0, -size / 2});
-    map->getMaterial()->setShader(mxe::ShaderManager::getInstance().addShader("basic_light_map"));
     map->getMaterial()->setTexture("Ressource/grass_terrain.jpg");
     scene.addChild(map);
 
