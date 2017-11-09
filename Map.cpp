@@ -2,7 +2,7 @@
  * @Author: daniel_b
  * @Date:   2017-09-12T22:43:55+02:00
  * @Last modified by:   daniel_b
- * @Last modified time: 2017-11-08T23:14:29+01:00
+ * @Last modified time: 2017-11-09T12:03:23+01:00
  */
 
 
@@ -19,7 +19,8 @@ Map::Map(scene::SceneManager &scn, size_t x, size_t y, float wide)
   _water->getMaterial()->setShader(ShaderManager::getInstance().addShader("water"));
   _water->setPosition(glm::vec3(0, -0.05, 0));
   _water->setScale(glm::vec3((float) x * wide / 2, 1, (float) y * wide / 2));
-  _water->getMaterial()->setColor(30, 50, 10);
+  // _water->getMaterial()->setColor(30, 50, 10);
+  _water->getMaterial()->setTexture("Ressource/water.jpg");
   // getMaterial()->setShader(mxe::ShaderManager::getInstance().addShader("basic_light_map"));
     _mesh = std::make_shared<mxe::gl_item::Mesh>();
     createShape(x, y, wide);

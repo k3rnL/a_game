@@ -2,7 +2,7 @@
  * @Author: danielb
  * @Date:   2017-07-22T23:35:22+02:00
  * @Last modified by:   daniel_b
- * @Last modified time: 2017-11-08T23:00:23+01:00
+ * @Last modified time: 2017-11-09T11:29:30+01:00
  */
 
 #include "Window.hpp"
@@ -54,6 +54,8 @@ int main()
     camera.getPosition()[1] = 10;
     camera.mouseInput(0, 0, 0);
 
+    scene.getLight() = glm::vec3(0, 10, 0);
+
     // Object *wavefront = scene.addWavefront("Ressource/Audi R8.fbx");
     // wavefront->setScale({0.05, 0.05, 0.05});
     // // wavefront->getMaterial()->setTexture("Ressource/alduin.bmp");
@@ -93,8 +95,14 @@ int main()
     {
         renderer.render(scene);
 
-        float   move_handle = 1. / renderer.getFrameCounter().getFrameRate();
+        float   move_handle = 1.0 / renderer.getFrameCounter().getFrameRate();
 
+        static glm::vec3 vector(1, 0, 1);
+        scene.getLight() +=  vector * 3.f * move_handle;
+        if (scene.getLight().x > 10)
+          vector *= -1;
+        else if (scene.getLight().x < 0)
+          vector *= -1;
         // wavefront->getRotation().y += 1 * move_handle;
 
         SDL_Event event;
