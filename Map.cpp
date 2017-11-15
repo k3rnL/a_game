@@ -2,7 +2,7 @@
  * @Author: daniel_b
  * @Date:   2017-09-12T22:43:55+02:00
  * @Last modified by:   daniel_b
- * @Last modified time: 2017-11-09T12:03:23+01:00
+ * @Last modified time: 2017-11-13T15:24:20+01:00
  */
 
 
@@ -10,7 +10,7 @@
 #include "Map.hpp"
 
 using namespace game;
-using namespace mxe;
+using namespace fse;
 
 Map::Map(scene::SceneManager &scn, size_t x, size_t y, float wide)
 {
@@ -21,14 +21,16 @@ Map::Map(scene::SceneManager &scn, size_t x, size_t y, float wide)
   _water->setScale(glm::vec3((float) x * wide / 2, 1, (float) y * wide / 2));
   // _water->getMaterial()->setColor(30, 50, 10);
   _water->getMaterial()->setTexture("Ressource/water.jpg");
-  // getMaterial()->setShader(mxe::ShaderManager::getInstance().addShader("basic_light_map"));
-    _mesh = std::make_shared<mxe::gl_item::Mesh>();
+
+  // getMaterial()->setShader(fse::ShaderManager::getInstance().addShader("basic_light_map"));
+
+    _mesh = std::make_shared<fse::gl_item::Mesh>();
     createShape(x, y, wide);
 }
 
 void    Map::randomize()
 {
-    std::shared_ptr<mxe::gl_item::Mesh> mesh = std::make_shared<mxe::gl_item::Mesh>(*_mesh);
+    std::shared_ptr<fse::gl_item::Mesh> mesh = std::make_shared<fse::gl_item::Mesh>(*_mesh);
 
     auto &indices = _mesh->getIndices();
     auto &vertexes = _mesh->getVertexes();
@@ -88,7 +90,7 @@ size_t  Map::getExistingVertexIndex(std::vector<glm::vec3> &vertexes, const glm:
     return (-1);
 }
 
-bool    Map::findTriangleByEdge(size_t v1, size_t v2, size_t *face, mxe::gl_item::Mesh &mesh)
+bool    Map::findTriangleByEdge(size_t v1, size_t v2, size_t *face, fse::gl_item::Mesh &mesh)
 {
     auto &indices = mesh.getIndices();
 

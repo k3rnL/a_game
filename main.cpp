@@ -2,24 +2,23 @@
  * @Author: danielb
  * @Date:   2017-07-22T23:35:22+02:00
  * @Last modified by:   daniel_b
- * @Last modified time: 2017-11-09T11:29:30+01:00
+ * @Last modified time: 2017-11-15T15:50:30+01:00
  */
 
-#include "Window.hpp"
-#include "Renderer.hpp"
-#include "Object.hpp"
-#include "Triangle.hpp"
-#include "Scene/Object/Wavefront.hpp"
-#include "Scene/SceneManager.hpp"
-#include "Scene/CameraFPS.hpp"
+#include <fse/Window.hpp>
+#include <fse/Renderer/Renderer.hpp>
+#include <fse/Scene/Object/Object.hpp>
+#include <fse/Scene/Object/Wavefront.hpp>
+#include <fse/Scene/SceneManager.hpp>
+#include <fse/Scene/CameraFPS.hpp>
 
 #include "Map.hpp"
 
 #include <chrono>
 
-using namespace mxe::scene::object;
+using namespace fse::scene::object;
 
-void    generate_world(mxe::scene::SceneManager &scene)
+void    generate_world(fse::scene::SceneManager &scene)
 {
   std::shared_ptr<Material>   mat = std::make_shared<Material>();
   mat->setTexture("Ressource/grass_terrain.jpg");
@@ -43,10 +42,11 @@ void    generate_world(mxe::scene::SceneManager &scene)
 
 int main()
 {
-    Window                      window(1540, 960);
-    mxe::Renderer               renderer(window);
-    mxe::scene::SceneManager    scene;
-    mxe::scene::CameraFPS       camera;
+    Window                      window(1024, 1024);
+    // Window                      window(1540, 960);
+    fse::Renderer               renderer(window);
+    fse::scene::SceneManager    scene;
+    fse::scene::CameraFPS       camera;
     float speed = 4.f; // 3 units / second
 
     scene.camera = &camera;
@@ -54,22 +54,39 @@ int main()
     camera.getPosition()[1] = 10;
     camera.mouseInput(0, 0, 0);
 
-    scene.getLight() = glm::vec3(0, 10, 0);
+    scene.setLight(std::make_shared<fse::scene::Light>());
+    scene.getLight()->setPosition({5, 10, 5});
+
+    std::cout << "[OpenGL]\nVendor: " << glGetString(GL_VENDOR) << "\nRenderer: ";
+    std::cout << glGetString(GL_RENDERER) << "\nVersion: ";
+    std::cout << glGetString(GL_VERSION) << "\nGLSL Version: ";
+    std::cout << glGetString(GL_SHADING_LANGUAGE_VERSION) << "\nExtension: ";
+    // std::cout << glGetString(GL_EXTENSIONS) << "\n\n\n";
 
     // Object *wavefront = scene.addWavefront("Ressource/Audi R8.fbx");
     // wavefront->setScale({0.05, 0.05, 0.05});
     // // wavefront->getMaterial()->setTexture("Ressource/alduin.bmp");
     // wavefront->getMaterial()->setColor(0.5, 0.5, 0.5);
 
-    size_t size = 2;
+    Object *wavefront = scene.addWavefront("Ressource/alduin.obj");
+    wavefront->setScale({0.005, 0.005, 0.005});
+    wavefront->setPosition({5,0,5});
+    wavefront->getMaterial()->setColor(100.5, 0, 0);
+    wavefront->getMaterial()->setTexture("Ressource/alduin.jpg");
+
+    float size = 2;
     game::Map *map = new game::Map(scene, size, size, 10);
-    // map->setPosition({-size / 2, 0, -size / 2});
+    // map->setPosition({-2, 0, -2});
+    // map->setPosition({-size / 2., 0, -size / 2.});
     map->getMaterial()->setTexture("Ressource/grass_terrain.jpg");
     scene.addChild(map);
 
-    Object *wavefront = scene.addWavefront("Ressource/alduin.obj");
-    wavefront->setScale({0.005, 0.005, 0.005});
-    wavefront->getMaterial()->setTexture("Ressource/alduin.bmp");
+    fse::scene::object::Object *surface = scene.addWavefront("Ressource/plan.obj");
+    surface->getMaterial()->setTexture(scene.getLight()->getTexture());
+    surface->setScale({5, 1, 5});
+    surface->setPosition({-7, 0, 3});
+    surface->getMaterial()->setShader(fse::ShaderManager::getInstance().addShader("depth_viewer"));
+
     // Wavefront wavefront2("Ressource/teapot.obj");
     // Triangle triangle(glm::vec3(-1, 1, 0), glm::vec3(1, 1, 0), glm::vec3(0, 0, 0));
     // Wavefront wavefront("/home/daniel_b/gfx_raytracer2/Wavefront/cow.obj");
@@ -98,12 +115,15 @@ int main()
         float   move_handle = 1.0 / renderer.getFrameCounter().getFrameRate();
 
         static glm::vec3 vector(1, 0, 1);
-        scene.getLight() +=  vector * 3.f * move_handle;
-        if (scene.getLight().x > 10)
+        scene.getLight()->getPosition() +=  vector * 3.f * move_handle;
+        // scene.camera->setPosition(scene.getLight()->getPosition());
+        if (scene.getLight()->getPosition().x > 10)
           vector *= -1;
-        else if (scene.getLight().x < 0)
+        else if (scene.getLight()->getPosition().x < 0)
           vector *= -1;
         // wavefront->getRotation().y += 1 * move_handle;
+
+        // scene.getLight()->setView(scene.camera->getView());
 
         SDL_Event event;
         while (window.pollEvent(event))

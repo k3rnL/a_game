@@ -26,10 +26,12 @@ struct MaterialData
 uniform MaterialData mt_data;
 
 uniform sampler2D diffuse_map;
+uniform sampler2DShadow shadow_map;
 
 out vec3 color;
 in vec3 normal_input;
 in vec3 vector_to_camera;
+in vec4 shadow_coord;
 in vec2 uv;
 
 float DistributionGGX(vec3 N, vec3 H, float roughness);
@@ -46,7 +48,6 @@ void main(){
 
   float angle = clamp(dot(light_vector, normalize(normal)), 0.0, 1.0);
   // float angle = clamp(dot((rot * vec4(light_vector, 0)).xyz, normalize(normal)), 0.0, 1.0);
-
   vec3 albedo;
   if (mt_data.diffuse_map == 0)
   {
@@ -58,8 +59,29 @@ void main(){
     // albedo = vec3(texture(diffuse_map, uv)) * angle;
     albedo = vec3(texture(diffuse_map, uv));
   }
+  vec4 shadow = shadow_coord;
+  shadow.xy = (shadow_coord.xy / shadow_coord.w) / 2 + 0.5;
   color = albedo * angle;
+  // color = vec3(shadow.z/4);
+  // color = vec3(gl_FragCoord.z);
+
+  // if (texture(shadow_map, vec3(shadow_coord.xy, shadow_coord.z / shadow_coord.w)) == 1) {
+  if (texture(shadow_map, vec3(shadow_coord.xy/shadow_coord.w, shadow.z/shadow.w)) < shadow_coord.z/shadow_coord.w) {
+    color *= 0.5;
+  }
+  // color = vec3(shadow_coord.xy / shadow_coord.w / 2 + 0.5, 0);
+  // if (texture(shadow_map, shadow) < )
+      // color = vec3(0);
+// color=vec3(shadow_coord.z / shadow_coord.w);
+  // color = vec3(to_shade_vertex.z / 200);
+  // color = vec3(texture(shadow_map, shadow_coord.xy).z);
+  // color = normal * angle;
+  // color = vec3(texture(diffuse_map, uv)) + 0.5;
+  // color = vec3(uv, 1);
   return;
+
+  ///////// NOT EXECUTED
+
   vec3 H = normalize(vector_to_camera + light_vector);
 
   float roughness = 5.5;
