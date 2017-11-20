@@ -2,7 +2,7 @@
  * @Author: danielb
  * @Date:   2017-07-22T23:35:22+02:00
  * @Last modified by:   daniel_b
- * @Last modified time: 2017-11-15T15:50:30+01:00
+ * @Last modified time: 2017-11-20T02:24:12+01:00
  */
 
 #include <fse/Window.hpp>
@@ -42,7 +42,7 @@ void    generate_world(fse::scene::SceneManager &scene)
 
 int main()
 {
-    Window                      window(1024, 1024);
+    Window                      window(1540, 1024);
     // Window                      window(1540, 960);
     fse::Renderer               renderer(window);
     fse::scene::SceneManager    scene;
@@ -55,7 +55,7 @@ int main()
     camera.mouseInput(0, 0, 0);
 
     scene.setLight(std::make_shared<fse::scene::Light>());
-    scene.getLight()->setPosition({5, 10, 5});
+    scene.getLight()->setPosition({0.1, 5,0.1});
 
     std::cout << "[OpenGL]\nVendor: " << glGetString(GL_VENDOR) << "\nRenderer: ";
     std::cout << glGetString(GL_RENDERER) << "\nVersion: ";
@@ -69,27 +69,44 @@ int main()
     // wavefront->getMaterial()->setColor(0.5, 0.5, 0.5);
 
     Object *wavefront = scene.addWavefront("Ressource/alduin.obj");
-    wavefront->setScale({0.005, 0.005, 0.005});
+    wavefront->setScale({0.007, 0.007, 0.007});
     wavefront->setPosition({5,0,5});
     wavefront->getMaterial()->setColor(100.5, 0, 0);
     wavefront->getMaterial()->setTexture("Ressource/alduin.jpg");
+    wavefront->getMaterial()->setNormal("Ressource/alduin_n.jpg");
 
-    float size = 2;
+    float size = 20;
     game::Map *map = new game::Map(scene, size, size, 10);
     // map->setPosition({-2, 0, -2});
     // map->setPosition({-size / 2., 0, -size / 2.});
     map->getMaterial()->setTexture("Ressource/grass_terrain.jpg");
+    // map->getMaterial()->setNormal("Ressource/alduin_n.jpg");
+    map->getMaterial()->setRepeat(200);
+    map->setPosition({-100,0, -100});
     scene.addChild(map);
 
     fse::scene::object::Object *surface = scene.addWavefront("Ressource/plan.obj");
     surface->getMaterial()->setTexture(scene.getLight()->getTexture());
     surface->setScale({5, 1, 5});
-    surface->setPosition({-7, 0, 3});
+    surface->setPosition({-7, 1, 3});
     surface->getMaterial()->setShader(fse::ShaderManager::getInstance().addShader("depth_viewer"));
 
-    // Wavefront wavefront2("Ressource/teapot.obj");
+    fse::scene::object::Object *wavefront2 = scene.addWavefront("Ressource/teapot.obj");
+    wavefront2->setScale(glm::vec3(0.015));
+    wavefront2->getMaterial()->setColor(0.7, 0.7, 0.7);
+    // wavefront2->getMaterial()->setTexture("Ressource/water.jpg");
+    wavefront2->getMaterial()->setNormal("Ressource/alduin_n.jpg");
+    wavefront2->setPosition(glm::vec3(2,0,2));
+    wavefront2->getMesh()->smoothNormal();
     // Triangle triangle(glm::vec3(-1, 1, 0), glm::vec3(1, 1, 0), glm::vec3(0, 0, 0));
     // Wavefront wavefront("/home/daniel_b/gfx_raytracer2/Wavefront/cow.obj");
+
+    fse::scene::object::Object *wavefront3 = scene.addWavefront("Ressource/egypt_table/Egy1.obj");
+    wavefront3->setScale(glm::vec3(0.1));
+    wavefront3->getPosition() += 1.3;
+    wavefront3->getMaterial()->setColor(0.6, 0.4, 0.4);
+    wavefront3->getMaterial()->setNormal("Ressource/egypt_table/LR1VRayBumpNormalsMap.jpg");
+    wavefront3->getMaterial()->setTexture("Ressource/egypt_table/LR1VRayDiffuseFilterMa.jpg");
 
     for (int i = 0 ; i < 00 ; i++)
     {
@@ -115,13 +132,13 @@ int main()
         float   move_handle = 1.0 / renderer.getFrameCounter().getFrameRate();
 
         static glm::vec3 vector(1, 0, 1);
-        scene.getLight()->getPosition() +=  vector * 3.f * move_handle;
+        // scene.getLight()->getPosition() +=  vector * 3.f * move_handle;
         // scene.camera->setPosition(scene.getLight()->getPosition());
         if (scene.getLight()->getPosition().x > 10)
           vector *= -1;
         else if (scene.getLight()->getPosition().x < 0)
           vector *= -1;
-        // wavefront->getRotation().y += 1 * move_handle;
+        wavefront->getRotation().y += 1 * move_handle;
 
         // scene.getLight()->setView(scene.camera->getView());
 

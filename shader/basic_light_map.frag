@@ -45,7 +45,7 @@ void main(){
 
   // normal.xy = vec2(cos(time) * 20, sin(time) * 20);
   // normal.xz = vec2(cos(to_shade_vertex.x * 20 + time), sin(to_shade_vertex.z * 20 + time));
-  normal.x = cos(to_shade_vertex.x * 20 + time);
+  normal.x = cos(to_shade_vertex.x * 30 + time);
 
   vec3 light_vector = normalize(light_pos - to_shade_vertex);
 
