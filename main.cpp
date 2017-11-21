@@ -2,7 +2,7 @@
  * @Author: danielb
  * @Date:   2017-07-22T23:35:22+02:00
  * @Last modified by:   daniel_b
- * @Last modified time: 2017-11-20T02:24:12+01:00
+ * @Last modified time: 2017-11-21T02:50:06+01:00
  */
 
 #include <fse/Window.hpp>
@@ -149,6 +149,8 @@ int main()
             {
               glm::vec3 direction = camera.getDirection();
 
+              if (event.key.keysym.sym == SDLK_a)
+                scene.launchRay(1540/2, 1024/2, renderer.projection);
                 if (event.key.keysym.sym == SDLK_z)
                   camera.getPosition() += glm::vec3(speed) * direction * glm::vec3(move_handle);
                 if (event.key.keysym.sym == SDLK_s)
