@@ -1,8 +1,8 @@
 /**
  * @Author: danielb
  * @Date:   2017-07-22T23:35:22+02:00
- * @Last modified by:   daniel_b
- * @Last modified time: 2017-11-21T02:50:06+01:00
+ * @Last modified by:
+ * @Last modified time: 2017-11-24T00:19:51+01:00
  */
 
 #include <fse/Window.hpp>
@@ -44,6 +44,11 @@ int main()
 {
     Window                      window(1540, 1024);
     // Window                      window(1540, 960);
+    GLenum err;
+    while((err = glGetError()) != GL_NO_ERROR)
+    {
+      std::cout << "[ERROR]  POUET err = " << err << "\n";
+    }
     fse::Renderer               renderer(window);
     fse::scene::SceneManager    scene;
     fse::scene::CameraFPS       camera;
@@ -53,9 +58,8 @@ int main()
     camera.getPosition()[2] = 10;
     camera.getPosition()[1] = 10;
     camera.mouseInput(0, 0, 0);
-
     scene.setLight(std::make_shared<fse::scene::Light>());
-    scene.getLight()->setPosition({0.1, 5,0.1});
+    scene.getLight()->setPosition({0.1, 10,0.1});
 
     std::cout << "[OpenGL]\nVendor: " << glGetString(GL_VENDOR) << "\nRenderer: ";
     std::cout << glGetString(GL_RENDERER) << "\nVersion: ";
@@ -80,9 +84,9 @@ int main()
     // map->setPosition({-2, 0, -2});
     // map->setPosition({-size / 2., 0, -size / 2.});
     map->getMaterial()->setTexture("Ressource/grass_terrain.jpg");
-    // map->getMaterial()->setNormal("Ressource/alduin_n.jpg");
     map->getMaterial()->setRepeat(200);
     map->setPosition({-100,0, -100});
+    map->getMaterial()->setColor(0.3, 0.7, 0.3);
     scene.addChild(map);
 
     fse::scene::object::Object *surface = scene.addWavefront("Ressource/plan.obj");
@@ -132,7 +136,7 @@ int main()
         float   move_handle = 1.0 / renderer.getFrameCounter().getFrameRate();
 
         static glm::vec3 vector(1, 0, 1);
-        // scene.getLight()->getPosition() +=  vector * 3.f * move_handle;
+        scene.getLight()->getPosition() +=  vector * 3.f * move_handle;
         // scene.camera->setPosition(scene.getLight()->getPosition());
         if (scene.getLight()->getPosition().x > 10)
           vector *= -1;

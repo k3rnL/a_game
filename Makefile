@@ -1,7 +1,7 @@
 # @Author: daniel_b
 # @Date:   2017-08-03T16:45:05+02:00
-# @Last modified by:   daniel_b
-# @Last modified time: 2017-11-13T01:17:55+01:00
+# @Last modified by:
+# @Last modified time: 2017-11-24T00:18:40+01:00
 
 
 
@@ -10,7 +10,7 @@ SRCS 	= 	main.cpp \
 
 OBJS	=		$(SRCS:.cpp=.o)
 
-LDFLAGS	=	-lfse -lSDL2 -lGL -lGLU -lGLEW
+LDFLAGS	=	-lepoxy -lfse -lSDL2 -lGL -lGLU
 
 CPPFLAGS	=	-std=c++11 -g
 
