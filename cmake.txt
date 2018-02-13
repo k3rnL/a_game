@@ -1,0 +1,5 @@
+@Date:   2018-02-05T02:36:01+01:00
+@Last modified time: 2018-02-05T02:43:04+01:00
+
+
+cmake .. -G "Visual Studio 15 2017 Win64" -DSDL2_PATH="C:\Users\k3rnL\Downloads\SDL2-2.0.7" -DASSIMP_ROOT_DIR="C:\Program Files\Assimp" -DFSE_PATH="E:\Programmation\Cpp\MyEngine\" -DGLEW_LOCATION="C:\Users\k3rnL\Downloads\glew-2.1.0" -DGLM_ROOT_DIR="C:\Users\k3rnL\Downloads\glm-0.9.9-a2"

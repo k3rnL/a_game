@@ -1,0 +1,41 @@
+cmake_minimum_required(VERSION 3.5)
+
+include(GNUInstallDirs)
+
+project(MyGame VERSION 1.0)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+include_directories("source")
+file(GLOB_RECURSE SOURCES source/*.cpp)# include/*.hpp)
+file(GLOB_RECURSE INCLUDES source/*.hpp)
+add_executable(MyGame ${SOURCES})
+
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH})
+#Find any version 2.X of SFML
+#See the FindSFML.cmake file for additional details and instructions
+find_package(FSE REQUIRED)
+include_directories(${FSE_INCLUDE_DIR})
+target_link_libraries(MyGame ${FSE_LIBRARY})
+
+find_package(SDL2 REQUIRED)
+include_directories(${SDL2_INCLUDE_DIR})
+target_link_libraries(MyGame ${SDL2_LIBRARY})
+
+find_package(assimp REQUIRED)
+if (!ASSIMP_FOUND)
+  message(ERROR "Cannot find assimp")
+endif()
+include_directories(${ASSIMP_INCLUDE_DIRS})
+target_link_libraries(MyGame ${ASSIMP_LIBRARIES})
+message("${ASSIMP_INCLUDE_DIRS}")
+find_package(GLEW REQUIRED)
+if (GLEW_FOUND)
+  include_directories(${GLEW_INCLUDE_DIR})
+  target_link_libraries(MyGame ${GLEW_LIBRARIES})
+endif()
+
+find_package(GLM REQUIRED)
+if (GLM_FOUND)
+  include_directories(${GLM_INCLUDE_DIRS})
+endif()
