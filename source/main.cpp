@@ -1,8 +1,8 @@
 /**
  * @Author: danielb
  * @Date:   2017-07-22T23:35:22+02:00
- * @Last modified by:
- * @Last modified time: 2017-11-24T00:19:51+01:00
+ * @Last modified by:   daniel_b
+ * @Last modified time: 2018-02-12T07:12:56+01:00
  */
 
 #include <fse/Window.hpp>
@@ -44,8 +44,10 @@ void    generate_world(fse::scene::SceneManager &scene)
   std::cout << "Loading time : " << duration / 1000000 << "s" << duration % 1000000 << "ms\n";
 }
 
-#include <direct.h>  
-#include <stdlib.h>  
+#if defined(_WIN32)
+
+#include <direct.h>
+#include <stdlib.h>
 #include <stdio.h>
 
 std::string getcwd_string(void) {
@@ -55,10 +57,12 @@ std::string getcwd_string(void) {
 	return cwd;
 }
 
+#endif
+
 int main(int argc, char **argv)
 {
 	Window                      window(1290, 800);
-	
+
 	std::cout << "[OpenGL]\nVendor: " << glGetString(GL_VENDOR) << "\nRenderer: ";
 	std::cout << glGetString(GL_RENDERER) << "\nVersion: ";
 	std::cout << glGetString(GL_VERSION) << "\nGLSL Version: ";
@@ -78,7 +82,7 @@ int main(int argc, char **argv)
     scene.setLight(std::make_shared<fse::scene::Light>());
     scene.getLight()->setPosition({0.1, 10,0.1});
 
-    
+
     // std::cout << glGetString(GL_EXTENSIONS) << "\n\n\n";
     // Object *wavefront = scene.addWavefront("Ressource/Audi R8.fbx");
     // wavefront->setScale({0.05, 0.05, 0.05});
@@ -91,7 +95,7 @@ int main(int argc, char **argv)
     wavefront->getMaterial()->setColor(100.5, 0, 0);
     wavefront->getMaterial()->setTexture("Ressource/alduin.jpg");
     wavefront->getMaterial()->setNormal("Ressource/alduin_n.jpg");
-	
+
     float size = 20;
     game::Map *map = new game::Map(scene, size, size, 10);
     // map->setPosition({-2, 0, -2});
@@ -117,15 +121,15 @@ int main(int argc, char **argv)
     wavefront2->getMesh()->smoothNormal();
     // Triangle triangle(glm::vec3(-1, 1, 0), glm::vec3(1, 1, 0), glm::vec3(0, 0, 0));
     // Wavefront wavefront("/home/daniel_b/gfx_raytracer2/Wavefront/cow.obj");
-	
-    
+
+
 	fse::scene::object::Object *wavefront3 = scene.addWavefront("Ressource/egypt_table/Egy1.obj");
 	wavefront3->setScale(glm::vec3(0.1f));
     wavefront3->getPosition() += 1.3f;
     wavefront3->getMaterial()->setColor(0.6, 0.4, 0.4);
     wavefront3->getMaterial()->setNormal("Ressource/egypt_table/LR1VRayBumpNormalsMap.jpg");
     wavefront3->getMaterial()->setTexture("Ressource/egypt_table/LR1VRayDiffuseFilterMa.jpg");
-	
+
     for (int i = 0 ; i < 00 ; i++)
     {
       Object *w = scene.addWavefront("Ressource/alduin.obj");
@@ -156,13 +160,13 @@ int main(int argc, char **argv)
 
 	fse::renderer::ObjectRenderer obj_rend;
 	obj_rend.addNode(wavefront3);
-	
+
 	fse::gl_item::Shader::AttributeHolder attribute;
 
     while (1)
     {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		
+
 		renderer.render(scene, 0, true, false);
 		obj_rend.clean();
 		obj_rend.addNode(wavefront3);
