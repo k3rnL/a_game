@@ -83,7 +83,6 @@ int main(int argc, char **argv)
     scene.setLight(std::make_shared<fse::scene::Light>());
     scene.getLight()->setPosition({0.1, 10,0.1});
 
-
     // std::cout << glGetString(GL_EXTENSIONS) << "\n\n\n";
     // Object *wavefront = scene.addWavefront("Ressource/Audi R8.fbx");
     // wavefront->setScale({0.05, 0.05, 0.05});
@@ -167,28 +166,27 @@ int main(int argc, char **argv)
 	attribute.addUniform("projection", renderer.projection);
 
 	fse::renderer::ObjectPicker picker(1290, 800);
-	for (auto node : scene.getNodes()) {
-		picker.addNode((Object*)node);
-	}
+	
+	Object *picked_obj = 0;
 
     while (1)
     {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		picker.pickObject(renderer.projection, camera.getView(), 0, 0);
 
-		renderer.render(scene, 0, true, false);
-		obj_rend.clean();
-		obj_rend.addNode(wavefront3);
-		attribute.addUniform("view", camera.getView());
-		obj_rend.drawAll(attribute, shader);
-		window.flipScreen();
+		picker.clean();
+		for (auto node : scene.getNodes()) {
+			picker.addNode((Object*)node);
+		}
+
+		renderer.render(scene);
+
 		GLenum err;
 		while ((err = glGetError()) != GL_NO_ERROR)
 		{
 			std::cout << "[ERROR]  POUET err = " << err << "\n";
 		}
 
-        float   move_handle = 1.0 / renderer.getFrameCounter().getFrameRate();
+        float   move_handle = 1.0 / 60;
 
         static glm::vec3 vector(1, 0, 1);
         //scene.getLight()->getPosition() +=  vector * 3.f * move_handle;
@@ -197,7 +195,7 @@ int main(int argc, char **argv)
           vector *= -1;
         else if (scene.getLight()->getPosition().x < 0)
           vector *= -1;
-        //wavefront->getRotation().y += 1 * move_handle;
+        wavefront->getRotation().z += 1 * move_handle;
 
         // scene.getLight()->setView(scene.camera->getView());
 
@@ -220,8 +218,10 @@ int main(int argc, char **argv)
                         return (0);
                     }
                 if (event.key.keysym.sym == SDLK_SPACE) {
-                    //map->randomize();
-					picker.shader->updateShader();
+					if (picked_obj)
+						picked_obj = 0;
+					else
+						picked_obj = picker.pickObject(renderer.projection, camera.getView(), 0, 0);
                 }
                 camera.mouseInput(0, 0, move_handle);
             }
@@ -232,7 +232,14 @@ int main(int argc, char **argv)
                 SDL_GetRelativeMouseState(&xpos, &ypos);
 				//camera.mouseInput(xpos, ypos, move_handle);
 				camera.mouseInput(xpos, ypos, 1.F/60);
-
+				if (picked_obj) {
+					float denom = glm::dot(glm::vec3(0, 1, 0), camera.getDirection());
+					if (glm::abs(denom) > 0.f) {
+						float k = glm::dot(picked_obj->getPosition() - camera.getPosition(), glm::vec3(0, 1, 0)) / denom;
+						picked_obj->setPosition(camera.getDirection() * k + camera.getPosition());
+					}
+					//picked_obj->getPosition() += glm::vec3(xpos, 0, ypos);
+				}
 			}
         } // end event polling
     }
