@@ -29,6 +29,8 @@ endif()
 include_directories(${ASSIMP_INCLUDE_DIRS})
 # target_link_libraries(MyGame ${ASSIMP_LIBRARIES})
 message("${ASSIMP_INCLUDE_DIRS}")
+
+list(APPEND CMAKE_PREFIX_PATH ${GLEW_LOCATION})
 find_package(GLEW REQUIRED)
 if (GLEW_FOUND)
   include_directories(${GLEW_INCLUDE_DIR})
