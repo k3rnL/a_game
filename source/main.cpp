@@ -7,6 +7,7 @@
 
 #include <fse/Window.hpp>
 #include <fse/Renderer/Renderer.hpp>
+#include <fse/Renderer/ObjectPicker.hpp>
 #include <fse/Scene/Object/Object.hpp>
 #include <fse/Scene/Object/Wavefront.hpp>
 #include <fse/Scene/SceneManager.hpp>
@@ -123,7 +124,7 @@ int main(int argc, char **argv)
     // Wavefront wavefront("/home/daniel_b/gfx_raytracer2/Wavefront/cow.obj");
 
 
-	fse::scene::object::Object *wavefront3 = scene.addWavefront("Ressource/egypt_table/Egy1.obj");
+	fse::scene::object::Object *wavefront3 = Wavefront::load("Ressource/egypt_table/Egy1.obj");
 	wavefront3->setScale(glm::vec3(0.1f));
     wavefront3->getPosition() += 1.3f;
     wavefront3->getMaterial()->setColor(0.6, 0.4, 0.4);
@@ -163,21 +164,23 @@ int main(int argc, char **argv)
 
 	fse::gl_item::Shader::AttributeHolder attribute;
 
+	attribute.addUniform("projection", renderer.projection);
+
+	fse::renderer::ObjectPicker picker(1290, 800);
+	for (auto node : scene.getNodes()) {
+		picker.addNode((Object*)node);
+	}
+
     while (1)
     {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		picker.pickObject(renderer.projection, camera.getView(), 0, 0);
 
 		renderer.render(scene, 0, true, false);
 		obj_rend.clean();
 		obj_rend.addNode(wavefront3);
-		shader->useProgram();
-		attribute.addUniform("projection", renderer.projection);
 		attribute.addUniform("view", camera.getView());
-
-		glClear(0);
-		//obj_rend.drawAll(attribute, shader);
-		shader->setUniformValue(glm::scale(wavefront3->getScale()), "model_view");
-		//glDrawArrays(0, 0, 0);
+		obj_rend.drawAll(attribute, shader);
 		window.flipScreen();
 		GLenum err;
 		while ((err = glGetError()) != GL_NO_ERROR)
@@ -218,6 +221,7 @@ int main(int argc, char **argv)
                     }
                 if (event.key.keysym.sym == SDLK_SPACE) {
                     //map->randomize();
+					picker.shader->updateShader();
                 }
                 camera.mouseInput(0, 0, move_handle);
             }
