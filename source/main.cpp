@@ -10,7 +10,7 @@
 #include <fse/Renderer/ObjectPicker.hpp>
 #include <fse/Scene/Object/Object.hpp>
 #include <fse/Scene/Object/Wavefront.hpp>
-#include <fse/Scene/SceneManager.hpp>
+#include <fse/Scene/DynamicScene.hpp>
 #include <fse/Scene/CameraFPS.hpp>
 
 #include "Map.hpp"
@@ -34,7 +34,7 @@ void    generate_world(fse::scene::SceneManager &scene)
   for (int y = -1 ; y < 0 ; y++)
   for (int z = -50 ; z < 50 ; z++)
   {
-    Object *cube = scene.addWavefront("Ressource/cube.obj");
+    Object *cube = scene.addObject("Ressource/cube.obj");
     cube->setPosition({x, y , z});
     cube->applyMaterial(mat);
   }
@@ -71,7 +71,7 @@ int main(int argc, char **argv)
 	// Window                      window(1540, 960);
 
     fse::Renderer               renderer(window);
-    fse::scene::SceneManager    scene;
+    fse::scene::DynamicScene    scene;
     fse::scene::CameraFPS       camera;
     float speed = 20.f; // 3 units / second
 
@@ -89,7 +89,7 @@ int main(int argc, char **argv)
     // // wavefront->getMaterial()->setTexture("Ressource/alduin.bmp");
     // wavefront->getMaterial()->setColor(0.5, 0.5, 0.5);
 
-    Object *wavefront = scene.addWavefront("Ressource/alduin.obj");
+    Object *wavefront = scene.addObject("Ressource/alduin.obj");
     wavefront->setScale({0.007f, 0.007f, 0.007f});
     wavefront->setPosition({5,0,5});
     wavefront->getMaterial()->setColor(100.5, 0, 0);
@@ -106,19 +106,19 @@ int main(int argc, char **argv)
     map->getMaterial()->setColor(0.3, 0.7, 0.3);
     scene.addChild(map);
 
-    fse::scene::object::Object *surface = scene.addWavefront("Ressource/plan.obj");
+    fse::scene::object::Object *surface = scene.addObject("Ressource/plan.obj");
     surface->getMaterial()->setTexture(scene.getLight()->getTexture());
     surface->setScale({5.f, 1.f, 5.f});
     surface->setPosition({-7, 1, 3});
     surface->getMaterial()->setShader(fse::ShaderManager::getInstance().addShader("depth_viewer"));
 
-    fse::scene::object::Object *wavefront2 = scene.addWavefront("Ressource/teapot.obj");
+    fse::scene::object::Object *wavefront2 = scene.addObject("Ressource/teapot.obj");
     wavefront2->setScale(glm::vec3(0.015f));
     wavefront2->getMaterial()->setColor(0.7f, 0.7f, 0.7f);
     // wavefront2->getMaterial()->setTexture("Ressource/water.jpg");
     wavefront2->getMaterial()->setNormal("Ressource/alduin_n.jpg");
     wavefront2->setPosition(glm::vec3(2,0,2));
-    wavefront2->getMesh()->smoothNormal();
+    //wavefront2->getMesh()->smoothNormal();
     // Triangle triangle(glm::vec3(-1, 1, 0), glm::vec3(1, 1, 0), glm::vec3(0, 0, 0));
     // Wavefront wavefront("/home/daniel_b/gfx_raytracer2/Wavefront/cow.obj");
 
@@ -130,13 +130,14 @@ int main(int argc, char **argv)
     wavefront3->getMaterial()->setNormal("Ressource/egypt_table/LR1VRayBumpNormalsMap.jpg");
     wavefront3->getMaterial()->setTexture("Ressource/egypt_table/LR1VRayDiffuseFilterMa.jpg");
 
-    for (int i = 0 ; i < 00 ; i++)
+    for (int i = 0 ; i < 10 ; i++)
     {
-      Object *w = scene.addWavefront("Ressource/alduin.obj");
+      Object *w = scene.addObject("Ressource/alduin.obj");
       w->getPosition()[0] = rand() % 100 - 50;
       w->getPosition()[1] = rand() % 100;
       w->getPosition()[2] = rand() % 100 - 50;
-      // w->getMaterial().setTexture("Ressource/alduin.bmp");
+	  w->setScale({ 0.007f, 0.007f, 0.007f });
+	  w->applyMaterial(wavefront->getMaterial());
     }
 
     // generate_world(scene);
@@ -178,6 +179,7 @@ int main(int argc, char **argv)
 			picker.addNode((Object*)node);
 		}
 
+		scene.update(1.0 / 60);
 		renderer.render(scene);
 
 		GLenum err;
