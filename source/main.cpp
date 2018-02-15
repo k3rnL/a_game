@@ -70,6 +70,8 @@ int main(int argc, char **argv)
 	std::cout << glGetString(GL_SHADING_LANGUAGE_VERSION) << "\nExtension: ";
 	// Window                      window(1540, 960);
 
+	std::cout << "GLM size = " << sizeof(glm::vec3) << " bt size = " << sizeof(btVector3) << "\n";
+
     fse::Renderer               renderer(window);
     fse::scene::DynamicScene    scene;
     fse::scene::CameraFPS       camera;
@@ -112,7 +114,7 @@ int main(int argc, char **argv)
     surface->setPosition({-7, 1, 3});
     surface->getMaterial()->setShader(fse::ShaderManager::getInstance().addShader("depth_viewer"));
 
-    fse::scene::object::Object *wavefront2 = scene.addObject("Ressource/teapot.obj");
+    /*fse::scene::object::Object *wavefront2 = scene.addObject("Ressource/teapot.obj");
     wavefront2->setScale(glm::vec3(0.015f));
     wavefront2->getMaterial()->setColor(0.7f, 0.7f, 0.7f);
     // wavefront2->getMaterial()->setTexture("Ressource/water.jpg");
@@ -120,7 +122,7 @@ int main(int argc, char **argv)
     wavefront2->setPosition(glm::vec3(2,0,2));
     //wavefront2->getMesh()->smoothNormal();
     // Triangle triangle(glm::vec3(-1, 1, 0), glm::vec3(1, 1, 0), glm::vec3(0, 0, 0));
-    // Wavefront wavefront("/home/daniel_b/gfx_raytracer2/Wavefront/cow.obj");
+    // Wavefront wavefront("/home/daniel_b/gfx_raytracer2/Wavefront/cow.obj");*/
 
 
 	fse::scene::object::Object *wavefront3 = Wavefront::load("Ressource/egypt_table/Egy1.obj");
@@ -130,13 +132,11 @@ int main(int argc, char **argv)
     wavefront3->getMaterial()->setNormal("Ressource/egypt_table/LR1VRayBumpNormalsMap.jpg");
     wavefront3->getMaterial()->setTexture("Ressource/egypt_table/LR1VRayDiffuseFilterMa.jpg");
 
-    for (int i = 0 ; i < 10 ; i++)
+    for (int i = 0 ; i < 100 ; i++)
     {
-      Object *w = scene.addObject("Ressource/alduin.obj");
-      w->getPosition()[0] = rand() % 100 - 50;
-      w->getPosition()[1] = rand() % 100;
-      w->getPosition()[2] = rand() % 100 - 50;
-	  w->setScale({ 0.007f, 0.007f, 0.007f });
+      Object *w = scene.addObject("Ressource/cube.obj");
+	  w->setPosition(glm::vec3(rand() % 100 - 50, rand() % 100, rand() % 100 - 50));
+	  //w->setScale({ 0.007f, 0.007f, 0.007f });
 	  w->applyMaterial(wavefront->getMaterial());
     }
 
@@ -197,7 +197,7 @@ int main(int argc, char **argv)
           vector *= -1;
         else if (scene.getLight()->getPosition().x < 0)
           vector *= -1;
-        wavefront->getRotation().z += 1 * move_handle;
+        //wavefront->getRotation().z += 1 * move_handle;
 
         // scene.getLight()->setView(scene.camera->getView());
 
