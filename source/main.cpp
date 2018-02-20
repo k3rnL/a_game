@@ -83,7 +83,7 @@ int main(int argc, char **argv)
 	camera.getPosition()[0] = 0;
     camera.mouseInput(0, 0, 0);
     scene.setLight(std::make_shared<fse::scene::Light>());
-    scene.getLight()->setPosition({0.1, 10,0.1});
+    scene.getLight()->setPosition({0.1, 30,0.1});
 
     // std::cout << glGetString(GL_EXTENSIONS) << "\n\n\n";
     // Object *wavefront = scene.addWavefront("Ressource/Audi R8.fbx");
@@ -91,7 +91,7 @@ int main(int argc, char **argv)
     // // wavefront->getMaterial()->setTexture("Ressource/alduin.bmp");
     // wavefront->getMaterial()->setColor(0.5, 0.5, 0.5);
 
-    Object *wavefront = scene.addObject("Ressource/alduin.obj");
+    Object *wavefront = scene.createObject("Ressource/alduin.obj");
     wavefront->setScale({0.007f, 0.007f, 0.007f});
     wavefront->setPosition({5,0,5});
     wavefront->getMaterial()->setColor(100.5, 0, 0);
@@ -108,11 +108,11 @@ int main(int argc, char **argv)
     map->getMaterial()->setColor(0.3, 0.7, 0.3);
     scene.addChild(map);
 
-    fse::scene::object::Object *surface = scene.addObject("Ressource/plan.obj");
+    /*fse::scene::object::Object *surface = scene.addObject("Ressource/plan.obj");
     surface->getMaterial()->setTexture(scene.getLight()->getTexture());
     surface->setScale({5.f, 1.f, 5.f});
     surface->setPosition({-7, 1, 3});
-    surface->getMaterial()->setShader(fse::ShaderManager::getInstance().addShader("depth_viewer"));
+    surface->getMaterial()->setShader(fse::ShaderManager::getInstance().addShader("depth_viewer"));*/
 
     /*fse::scene::object::Object *wavefront2 = scene.addObject("Ressource/teapot.obj");
     wavefront2->setScale(glm::vec3(0.015f));
@@ -132,10 +132,18 @@ int main(int argc, char **argv)
     wavefront3->getMaterial()->setNormal("Ressource/egypt_table/LR1VRayBumpNormalsMap.jpg");
     wavefront3->getMaterial()->setTexture("Ressource/egypt_table/LR1VRayDiffuseFilterMa.jpg");
 
-    for (int i = 0 ; i < 100 ; i++)
+	for (float x = 0; x < 10; x++)
+		for (float y = 0; y < 10 ; y++)
+			for (float z = 0; z < 10; z++) {
+				DynamicObject *w = scene.addObject("Ressource/cube.obj");
+				w->setPosition(glm::vec3(x - 10, y+0.5, z + 10));
+				w->applyMaterial(wavefront->getMaterial());
+				w->wakeOnMovement();
+			}
+    for (int i = 0 ; i < 000 ; i++)
     {
       Object *w = scene.addObject("Ressource/cube.obj");
-	  w->setPosition(glm::vec3(rand() % 100 - 50, rand() % 100, rand() % 100 - 50));
+	  w->setPosition(glm::vec3(rand() % 100 - 50, rand() % 300 + 150, rand() % 100 - 50));
 	  //w->setScale({ 0.007f, 0.007f, 0.007f });
 	  w->applyMaterial(wavefront->getMaterial());
     }
@@ -147,7 +155,7 @@ int main(int argc, char **argv)
 
     // objects.push_back(&triangle);
     // objects.push_back(&wavefront2);
-	std::shared_ptr<fse::gl_item::Shader> shader = std::make_shared<fse::gl_item::Shader>("shader/basic.vert", "shader/basic.frag");
+	std::shared_ptr<fse::gl_item::Shader> shader = std::make_shared<fse::gl_item::Shader>("shader/basic.vert", "shader/picker.frag");
 	shader->useProgram();
 	glDisable(GL_CULL_FACE);
 
@@ -170,6 +178,8 @@ int main(int argc, char **argv)
 	
 	Object *picked_obj = 0;
 
+	std::map<int, bool> key;
+
     while (1)
     {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -178,10 +188,11 @@ int main(int argc, char **argv)
 		for (auto node : scene.getNodes()) {
 			picker.addNode((Object*)node);
 		}
-
+		picker.pickObject(renderer.projection, camera.getView(), 0, 0);
+		renderer.render(scene, 0, true, false);
+		//scene.drawPhysicsScene(renderer.projection);
 		scene.update(1.0 / 60);
-		renderer.render(scene);
-
+		window.flipScreen();
 		GLenum err;
 		while ((err = glGetError()) != GL_NO_ERROR)
 		{
@@ -201,32 +212,73 @@ int main(int argc, char **argv)
 
         // scene.getLight()->setView(scene.camera->getView());
 
+		glm::vec3 direction = camera.getDirection();
+
+		if (key[SDLK_z])
+			camera.getPosition() += glm::vec3(speed) * direction * glm::vec3(1.f / 60);
+		if (key[SDLK_s])
+			camera.getPosition() -= glm::vec3(speed) * direction * glm::vec3(1.f / 60);
+		if (key[SDLK_LSHIFT] && picked_obj != 0)
+			picked_obj->setPosition(picked_obj->getPosition() + glm::vec3(0, 10, 0) * 1.f / 60);
+		if (key[SDLK_LCTRL] && picked_obj != 0)
+			picked_obj->setPosition(picked_obj->getPosition() - glm::vec3(0, 10, 0) * 1.f / 60);
+		camera.mouseInput(0, 0, move_handle);
+
         SDL_Event event;
         while (window.pollEvent(event))
         {
-            if (event.type == SDL_KEYDOWN)
-            {
-				glm::vec3 direction = camera.getDirection();
+			if (event.type == SDL_MOUSEBUTTONDOWN) {
+				if (event.button.button == SDL_BUTTON_LEFT) {
+					DynamicObject *obj = scene.addObject("Ressource/cube.obj");
+					obj->setPosition(camera.getPosition() + camera.getDirection() * 3);
+					obj->setScale(glm::vec3(0.15));
+					obj->addForce(camera.getDirection() * 2000);
+				}
+				else if (event.button.button == SDL_BUTTON_RIGHT && picked_obj) {
+					for (auto node : scene.getNodes()) {
+						auto obj = dynamic_cast<DynamicObject *>(node);
+						if (obj) {
+							float force = glm::distance(obj->getPosition(), picked_obj->getPosition());
+							glm::vec3 vector = glm::normalize(obj->getPosition() - picked_obj->getPosition());
+							obj->addForce(vector * 0);
+						}
+					}
+				}
+			}
+			if (event.type == SDL_KEYDOWN)
+				key[event.key.keysym.sym] = true;
+			else if (event.type == SDL_KEYUP)
+				key[event.key.keysym.sym] = false;
 
-              if (event.key.keysym.sym == SDLK_a)
-                scene.launchRay(1540/2, 1024/2, renderer.projection);
-                if (event.key.keysym.sym == SDLK_z)
-                  camera.getPosition() += glm::vec3(speed) * direction * glm::vec3(1.f/60);
-                if (event.key.keysym.sym == SDLK_s)
-                  camera.getPosition() -= glm::vec3(speed) * direction * glm::vec3(1.f/60);
-                if (event.key.keysym.sym == SDLK_ESCAPE)
-                    {
-                        window.close();
-                        return (0);
-                    }
-                if (event.key.keysym.sym == SDLK_SPACE) {
+			if (event.type == SDL_KEYDOWN) {
+				if (event.key.keysym.sym == SDLK_m)
+					scene.launchRay(1540 / 2, 1024 / 2, renderer.projection);
+				if (event.key.keysym.sym == SDLK_a && picked_obj != 0 && dynamic_cast<DynamicObject *>(picked_obj) != 0)
+					if (((DynamicObject *)picked_obj)->isWake())
+						((DynamicObject *)picked_obj)->wakeOnMovement();
+					else
+						((DynamicObject *)picked_obj)->wakeUp();
+				if (event.key.keysym.sym == SDLK_e) {
+					DynamicObject *obj = scene.createObject("Ressource/cube.obj", 1000);
+					obj->setPosition(camera.getPosition() + camera.getDirection() * 3);
+					obj->setScale(glm::vec3(0.5));
+					obj->addForce(camera.getDirection() * 4700000);
+					scene.addChild(obj);
+				}
+
+				if (event.key.keysym.sym == SDLK_ESCAPE)
+				{
+					window.close();
+					return (0);
+				}
+				if (event.key.keysym.sym == SDLK_SPACE) {
 					if (picked_obj)
 						picked_obj = 0;
 					else
 						picked_obj = picker.pickObject(renderer.projection, camera.getView(), 0, 0);
-                }
-                camera.mouseInput(0, 0, move_handle);
-            }
+				}
+				camera.mouseInput(0, 0, move_handle);
+			}
 
             if (event.type == SDL_MOUSEMOTION)
             {
