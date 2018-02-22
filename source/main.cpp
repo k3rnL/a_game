@@ -125,21 +125,33 @@ int main(int argc, char **argv)
     // Wavefront wavefront("/home/daniel_b/gfx_raytracer2/Wavefront/cow.obj");*/
 
 
-	fse::scene::object::Object *wavefront3 = Wavefront::load("Ressource/egypt_table/Egy1.obj");
-	wavefront3->setScale(glm::vec3(0.1f));
-    wavefront3->getPosition() += 1.3f;
+	fse::scene::object::Object *wavefront3 = scene.addObject("Ressource/egypt_table/Egy1.obj");
+	//wavefront3->setScale(glm::vec3(0.1f));
+    wavefront3->setPosition(wavefront3->getPosition() + glm::vec3(0, 5, 0));
     wavefront3->getMaterial()->setColor(0.6, 0.4, 0.4);
-    wavefront3->getMaterial()->setNormal("Ressource/egypt_table/LR1VRayBumpNormalsMap.jpg");
-    wavefront3->getMaterial()->setTexture("Ressource/egypt_table/LR1VRayDiffuseFilterMa.jpg");
+    //wavefront3->getMaterial()->setNormal("Ressource/egypt_table/LR1VRayBumpNormalsMap.jpg");
+    //wavefront3->getMaterial()->setTexture("Ressource/egypt_table/LR1VRayDiffuseFilterMa.jpg");
+	scene.addChild(wavefront3);
+	std::cout << "Mesh=" << wavefront3->getMesh()->getVertexes().size() << "\n";
 
-	for (float x = 0; x < 10; x++)
+	for (float x = 0; x < 0; x++)
 		for (float y = 0; y < 10 ; y++)
 			for (float z = 0; z < 10; z++) {
-				DynamicObject *w = scene.addObject("Ressource/cube.obj");
+				DynamicObject *w = scene.addObject("Ressource/cube.obj", 10);
 				w->setPosition(glm::vec3(x - 10, y+0.5, z + 10));
 				w->applyMaterial(wavefront->getMaterial());
 				w->wakeOnMovement();
 			}
+
+	{
+		DynamicObject *parent = scene.addObject("Ressource/cube.obj", 10);
+		parent->setPosition(glm::vec3(50, 0.5, 0));
+		DynamicObject *child = scene.createObject("Ressource/cube.obj", 10);
+		child->setPosition(glm::vec3(5, 0, 0));
+		parent->addChild(child);
+
+	}
+	
     for (int i = 0 ; i < 000 ; i++)
     {
       Object *w = scene.addObject("Ressource/cube.obj");
@@ -188,7 +200,7 @@ int main(int argc, char **argv)
 		for (auto node : scene.getNodes()) {
 			picker.addNode((Object*)node);
 		}
-		picker.pickObject(renderer.projection, camera.getView(), 0, 0);
+		//picker.pickObject(renderer.projection, camera.getView(), 0, 0);
 		renderer.render(scene, 0, true, false);
 		//scene.drawPhysicsScene(renderer.projection);
 		scene.update(1.0 / 60);
@@ -229,7 +241,7 @@ int main(int argc, char **argv)
         {
 			if (event.type == SDL_MOUSEBUTTONDOWN) {
 				if (event.button.button == SDL_BUTTON_LEFT) {
-					DynamicObject *obj = scene.addObject("Ressource/cube.obj");
+					DynamicObject *obj = scene.addObject("Ressource/cube.obj", 1);
 					obj->setPosition(camera.getPosition() + camera.getDirection() * 3);
 					obj->setScale(glm::vec3(0.15));
 					obj->addForce(camera.getDirection() * 2000);
@@ -276,6 +288,7 @@ int main(int argc, char **argv)
 						picked_obj = 0;
 					else
 						picked_obj = picker.pickObject(renderer.projection, camera.getView(), 0, 0);
+					std::cout << "Picked=" << picked_obj << "\n";
 				}
 				camera.mouseInput(0, 0, move_handle);
 			}
