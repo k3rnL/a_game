@@ -10,7 +10,7 @@
 #include <fse/Renderer/ObjectPicker.hpp>
 #include <fse/Scene/Object/Object.hpp>
 #include <fse/Scene/Object/Wavefront.hpp>
-#include <fse/Scene/SceneManager.hpp>
+#include <fse/Scene/DynamicScene.hpp>
 #include <fse/Scene/CameraFPS.hpp>
 #include <fse/Ui/Surface.hpp>
 
@@ -42,6 +42,7 @@ std::string getcwd_string(void) {
 
 int main(int argc, char **argv)
 {
+
 	Window		window(800, 600);
 	fse::ui::Surface		surface;
 
@@ -50,6 +51,7 @@ int main(int argc, char **argv)
 	while (1) {
 		surface.draw(shader);
 	}
+
 
 
 	
