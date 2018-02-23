@@ -4,18 +4,18 @@
  * @Last modified by:   daniel_b
  * @Last modified time: 2017-11-13T01:06:26+01:00
  */
-
+#define M_PI 3.14
 #include <random>
 #include <cstring>
 
 #include <fse/Scene/SceneManager.hpp>
-#include <fse/Scene/Object/Object.hpp>
+#include <fse/Scene/Object/DynamicObject.hpp>
 #include <fse/Scene/Object/Wavefront.hpp>
 
 
 namespace game {
 
-    class Map : public fse::scene::object::Object
+    class Map : public fse::scene::object::DynamicObject
     {
     public:
         Map(fse::scene::SceneManager &scn, size_t size_x, size_t size_y, float wide = 1.0);

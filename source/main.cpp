@@ -4,7 +4,7 @@
  * @Last modified by:   daniel_b
  * @Last modified time: 2018-02-12T07:12:56+01:00
  */
-
+#define M_PI 3.14
 #include <fse/Window.hpp>
 #include <fse/Renderer/Renderer.hpp>
 #include <fse/Renderer/ObjectPicker.hpp>
@@ -98,7 +98,7 @@ int main(int argc, char **argv)
     wavefront->getMaterial()->setTexture("Ressource/alduin.jpg");
     wavefront->getMaterial()->setNormal("Ressource/alduin_n.jpg");
 
-    float size = 20;
+    float size = 1;
     game::Map *map = new game::Map(scene, size, size, 10);
     // map->setPosition({-2, 0, -2});
     // map->setPosition({-size / 2., 0, -size / 2.});
@@ -106,6 +106,7 @@ int main(int argc, char **argv)
     map->getMaterial()->setRepeat(200);
     map->setPosition({-100,0, -100});
     map->getMaterial()->setColor(0.3, 0.7, 0.3);
+	map->setScale(glm::vec3(100));
     scene.addChild(map);
 
     /*fse::scene::object::Object *surface = scene.addObject("Ressource/plan.obj");
@@ -202,8 +203,9 @@ int main(int argc, char **argv)
 		}
 		//picker.pickObject(renderer.projection, camera.getView(), 0, 0);
 		renderer.render(scene, 0, true, false);
-		//scene.drawPhysicsScene(renderer.projection);
+		scene.drawPhysicsScene(renderer.projection);
 		scene.update(1.0 / 60);
+
 		window.flipScreen();
 		GLenum err;
 		while ((err = glGetError()) != GL_NO_ERROR)
@@ -278,6 +280,9 @@ int main(int argc, char **argv)
 					scene.addChild(obj);
 				}
 
+				if (event.key.keysym.sym == SDLK_e) {
+					map->randomize();
+				}
 				if (event.key.keysym.sym == SDLK_ESCAPE)
 				{
 					window.close();

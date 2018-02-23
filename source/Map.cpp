@@ -12,7 +12,7 @@
 using namespace game;
 using namespace fse;
 
-Map::Map(scene::SceneManager &scn, size_t x, size_t y, float wide)
+Map::Map(scene::SceneManager &scn, size_t x, size_t y, float wide) : DynamicObject(0)
 {
   _water = scene::object::Wavefront::load("Ressource/plan.obj");
   addChild(_water);
@@ -52,25 +52,20 @@ void    Map::randomize()
 
         turnFaceToFindLongestEdge(vertexes, face);
 
-        glm::vec3 v4 = (vertexes[face[0]] + vertexes[face[1]]) / glm::vec3(2.0);
-        if ((face[3] = getExistingVertexIndex(mesh->getVertexes(), v4)) == -1) {
-            glm::vec3 normal = (_mesh->getNormals()[face[0]] + _mesh->getNormals()[face[1]]) / glm::vec3(2.0);
-            glm::vec2 uv = (_mesh->getUVs()[face[0]] + _mesh->getUVs()[face[1]]) / glm::vec2(2.0);
-            face[3] = mesh->addVertex(v4);
-            mesh->addUV(uv);
-            mesh->addNormal(normal);
-            new_vertex_index.push_back(face[3]);
-        }
+        glm::vec3 v4 = (vertexes[face[0]] + vertexes[face[1]] + vertexes[face[2]]) / glm::vec3(3.0);
+        glm::vec3 normal = (_mesh->getNormals()[face[0]] + _mesh->getNormals()[face[1]] + _mesh->getNormals()[face[2]]) / glm::vec3(3.0);
+        glm::vec2 uv = (_mesh->getUVs()[face[0]] + _mesh->getUVs()[face[1]] + _mesh->getUVs()[face[2]]) / glm::vec2(3.0);
 
-        mesh->addFace({face[0], face[3], face[2]});
+        face[3] = mesh->addVertex(v4);
+        mesh->addUV(uv);
+        mesh->addNormal(normal);
+
+        new_vertex_index.push_back(face[3]);
+
+
         mesh->addFace({face[3], face[1], face[2]});
-
-        if (findTriangleByEdge(face[0], face[1], face, *_mesh)) {
-            turnFaceToFindLongestEdge(vertexes, face);
-
-            mesh->addFace({face[0], face[3], face[2]});
-            mesh->addFace({face[3], face[1], face[2]});
-        }
+		mesh->addFace({ face[0], face[3], face[2] });
+		mesh->addFace({face[0], face[1], face[3]});
 
     }
 
@@ -78,7 +73,7 @@ void    Map::randomize()
         mesh->getVertexes()[index][1] += dis(e);
     }
     mesh->finish();
-    _mesh = mesh;
+	setMesh(mesh);
 }
 
 size_t  Map::getExistingVertexIndex(std::vector<glm::vec3> &vertexes, const glm::vec3 &v)
@@ -126,7 +121,7 @@ void    Map::turnFaceToFindLongestEdge(std::vector<glm::vec3> &vertexes, size_t 
 }
 
 void    Map::createShape(size_t size_x, size_t size_y, float wide)
-{
+{/*
     for (size_t x = 0 ; x < size_x ; x++) {
         for (size_t y = 0 ; y < size_y ; y++) {
             _mesh->addVertex({x * wide, 0, y * wide});
@@ -140,7 +135,22 @@ void    Map::createShape(size_t size_x, size_t size_y, float wide)
             _mesh->addFace({x - 1 + (y - 1) * size_x, x + (y - 1) * size_x, x + y * size_x});
             _mesh->addFace({x - 1 + (y - 1) * size_x, x + y * size_x, x - 1 + y * size_x});
         }
-    }
+    }*/
 
+	_mesh->addVertex(glm::vec3(-1, 0, -1));
+	_mesh->addVertex(glm::vec3(1, 0, -1));
+	_mesh->addVertex(glm::vec3(1, 0, 1));
+	_mesh->addVertex(glm::vec3(-1, 0, 1));
+	_mesh->addNormal({ 0, 1, 0 });
+	_mesh->addNormal({ 0, 1, 0 });
+	_mesh->addNormal({ 0, 1, 0 });
+	_mesh->addNormal({ 0, 1, 0 });
+	_mesh->addUV(glm::vec2(0, 0));
+	_mesh->addUV(glm::vec2(1, 0));
+	_mesh->addUV(glm::vec2(1, 1));
+	_mesh->addUV(glm::vec2(0, 1));
+	_mesh->addFace(glm::vec3(0, 3, 1));
+	_mesh->addFace(glm::vec3(1, 3, 2));
     _mesh->finish();
+	setMesh(_mesh);
 }
