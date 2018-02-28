@@ -47,4 +47,7 @@ find_package(OpenGL REQUIRED)
 find_package(Bullet REQUIRED)
 include_directories(${BULLET_INCLUDE_DIRS})
 
-target_link_libraries(MyGame ${SDL2_LIBRARY} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} ${ASSIMP_LIBRARIES} ${BULLET_LIBRARIES} ${FSE_LIBRARY})
+find_package(Freetype REQUIRED)
+include_directories(${FREETYPE_INCLUDE_DIRS})
+
+target_link_libraries(MyGame ${SDL2_LIBRARY} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} ${ASSIMP_LIBRARIES} ${BULLET_LIBRARIES} ${FREETYPE_LIBRARIES} ${FSE_LIBRARY})
