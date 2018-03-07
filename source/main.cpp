@@ -15,6 +15,7 @@
 #include <fse/Ui/Surface.hpp>
 #include <fse/Ui/Text.hpp>
 #include <fse/Ui/LayoutVertical.hpp>
+#include <fse/Ui/LayoutHorizontal.hpp>
 #include <fse/Ui/Button.hpp>
 
 #include "Map.hpp"
@@ -46,25 +47,22 @@ std::string getcwd_string(void) {
 fse::ui::Surface		*surface;
 fse::ui::Button		*button;
 fse::ui::Text		*surface2;
+Object *picked_obj = 0;
 
-void update_ui(Window &window) {
-	window.makeContextCurrent();
-	SDL_Event event;
-	while (window.pollEvent(event));
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	surface->draw();
-	window.flipScreen();
-}
-
-void create_ui() {
+fse::ui::Surface *create_list()
+{
 	fse::ui::Layout *layout = new fse::ui::LayoutVertical();
+	layout->setMaximumSize(glm::vec2(200, 600));
 	layout->setSize(glm::vec2(200, 600));
-	layout->setBackground(glm::vec4(0.4, 0.4, 0.4, 1));
+	layout->setBackground(glm::vec4(0.2, 0.2, 0.2, 1));
 
 	float size = 5;
 	for (int i = 0; i < size; i++) {
 		fse::ui::Surface *s = new fse::ui::Surface();
-		s->setBackground(glm::vec4(i / size, i / size, i / size, 1.));
+		if (i%2)
+			s->setBackground(glm::vec4(0.25, 0.25, 0.25, 1.));
+		else
+			s->setBackground(glm::vec4(0.3, 0.3, 0.3, 1.));
 		s->setMaximumSize(glm::vec2(0, 50));
 		layout->addSurface(s);
 		fse::ui::Text *t = new fse::ui::Text();
@@ -72,7 +70,39 @@ void create_ui() {
 		t->setFont("Font/Datalegreya-Thin.otf");
 		s->addSurface(t);
 	}
+	return (layout);
+}
+
+fse::ui::Text	*label_pos;
+
+void create_ui() {
+	fse::ui::Layout *layout = new fse::ui::LayoutHorizontal();
+	layout->setSize(glm::vec2(800, 600));
+	layout->addSurface(create_list());
+
+	fse::ui::Layout *surf = new fse::ui::LayoutVertical();
+	surf->setBackground(glm::vec4(0.4, 0.4, 0.4, 1));
+	label_pos = new fse::ui::Text();
+	label_pos->setFont("Font/asman.ttf");
+	label_pos->setMaximumSize(glm::vec2(0, 20));
+	label_pos->setSize(glm::vec2(110, 20));
+	label_pos->setBehavior(fse::ui::Surface::DEFAULT);
+	surf->addSurface(label_pos);
+
+	layout->addSurface(surf);
 	surface->addSurface(layout);
+}
+
+void update_ui(Window &window, fse::scene::SceneManager &scene) {
+	window.makeContextCurrent();
+	SDL_Event event;
+	while (window.pollEvent(event));
+	if (picked_obj) {
+		label_pos->setText("pos: " + std::to_string(picked_obj->getPosition().x) + "\t" + std::to_string(picked_obj->getPosition().y) + "\t" + std::to_string(picked_obj->getPosition().z));
+	}
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	surface->draw();
+	window.flipScreen();
 }
 
 int main(int argc, char **argv)
@@ -140,7 +170,8 @@ int main(int argc, char **argv)
 	wavefront->getMaterial()->setNormal("Ressource/alduin_n.jpg");
 
 	float size = 1;
-	game::Map *map = new game::Map(scene, size, size, 10);
+	//game::Map *map = new game::Map(scene, size, size, 10);
+	Object *map = scene.addObject("Ressource/plan.obj");
 	// map->setPosition({-2, 0, -2});
 	// map->setPosition({-size / 2., 0, -size / 2.});
 	map->getMaterial()->setTexture("Ressource/grass_terrain.jpg");
@@ -150,12 +181,12 @@ int main(int argc, char **argv)
 	map->setScale(glm::vec3(100));
 	scene.addChild(map);
 
-	fse::scene::object::Object *wavefront3 = scene.addObject("Ressource/egypt_table/Egy1.obj");
+	fse::scene::object::Object *wavefront3 = scene.createObject("Ressource/egypt_table/Egy1.obj");
+	wavefront3->setPosition(wavefront3->getPosition() + glm::vec3(0, 2, 0));
 	//wavefront3->setScale(glm::vec3(0.1f));
-	wavefront3->setPosition(wavefront3->getPosition() + glm::vec3(0, 5, 0));
 	wavefront3->getMaterial()->setColor(0.6, 0.4, 0.4);
-	//wavefront3->getMaterial()->setNormal("Ressource/egypt_table/LR1VRayBumpNormalsMap.jpg");
-	//wavefront3->getMaterial()->setTexture("Ressource/egypt_table/LR1VRayDiffuseFilterMa.jpg");
+	wavefront3->getMaterial()->setNormal("Ressource/egypt_table/LR1VRayBumpNormalsMap.jpg");
+	wavefront3->getMaterial()->setTexture("Ressource/egypt_table/LR1VRayDiffuseFilterMa.jpg");
 	scene.addChild(wavefront3);
 	std::cout << "Mesh=" << wavefront3->getMesh()->getVertexes().size() << "\n";
 
@@ -165,8 +196,8 @@ int main(int argc, char **argv)
 	});*/
 
 	for (float x = 0; x < 0; x++)
-		for (float y = 0; y < 10; y++)
-			for (float z = 0; z < 10; z++) {
+		for (float y = 0; y < 15; y++)
+			for (float z = 0; z < 20; z++) {
 				DynamicObject *w = scene.addObject("Ressource/cube.obj", 10);
 				w->setPosition(glm::vec3(x - 10, y + 0.5, z + 10));
 				w->applyMaterial(wavefront->getMaterial());
@@ -218,13 +249,11 @@ int main(int argc, char **argv)
 
 	fse::renderer::ObjectPicker picker(1290, 800);
 
-	Object *picked_obj = 0;
-
 	std::map<int, bool> key;
 
 	while (1)
 	{
-		update_ui(windowUI);
+		update_ui(windowUI, scene);
 		window.makeContextCurrent();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -274,6 +303,8 @@ int main(int argc, char **argv)
 		{
 			if (event.type == SDL_MOUSEBUTTONDOWN) {
 				if (event.button.button == SDL_BUTTON_LEFT) {
+					
+					//DynamicObject *obj = scene.addObject("Ressource/egypt_table/Egy1.obj", 4);
 					DynamicObject *obj = scene.addObject("Ressource/cube.obj", 1);
 					obj->setPosition(camera.getPosition() + camera.getDirection() * 3);
 					obj->setScale(glm::vec3(0.15));
@@ -312,7 +343,7 @@ int main(int argc, char **argv)
 				}
 
 				if (event.key.keysym.sym == SDLK_e) {
-					map->randomize();
+					//map->randomize();
 				}
 				if (event.key.keysym.sym == SDLK_ESCAPE)
 				{
