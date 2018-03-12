@@ -1,8 +1,8 @@
 /**
  * @Author: danielb
  * @Date:   2017-07-22T23:35:22+02:00
- * @Last modified by:
- * @Last modified time: 2018-02-25T02:59:20+01:00
+ * @Last modified by:   daniel_b
+ * @Last modified time: 2018-03-12T20:30:18+01:00
  */
 
 #include <fse/Window.hpp>
@@ -53,6 +53,7 @@ fse::ui::Surface *create_list()
 {
 	fse::ui::Layout *layout = new fse::ui::LayoutVertical();
 	layout->setBackground(glm::vec4(0.2, 0.2, 0.2, 1));
+	layout->setBehavior(new fse::ui::Surface::FitTo(glm::vec2(200, 0)));
 
 	float size = 5;
 	for (int i = 0; i < size; i++) {
@@ -86,15 +87,15 @@ void create_ui() {
 	surf->addSurface(label_pos);
 
 	//layout->addSurface(surf);
-	//surface->addSurface(layout);
-	surface->addSurface(surf);
+	surface->addSurface(layout);
+	// surface->addSurface(surf);
 }
 
 void update_ui(Window &window) {
 	window.makeContextCurrent();
 	SDL_Event event;
 	while (window.pollEvent(event)) {
-		if (event.window.event)
+		//if (event.window.event)
 	}
 	if (picked_obj) {
 		label_pos->setText("pos: " + std::to_string(picked_obj->getPosition().x) + "\t" + std::to_string(picked_obj->getPosition().y) + "\t" + std::to_string(picked_obj->getPosition().z));
@@ -117,19 +118,14 @@ int main(int argc, char **argv)
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	surface = new fse::ui::Surface();
-<<<<<<< HEAD
-	surface->setSize(glm::vec2(800, 600));
-	surface->setBackground(glm::vec4(0.4,0.4,0.4,1.0));
-=======
 	fse::ui::Surface::Bound bound;
 	bound.size = glm::vec2(800, 600);
 	bound.pos = glm::vec2(0);
 	surface->setBound(bound);
 	surface->setBackground(glm::vec4(0.1, 0.1, 0.1, 1));
->>>>>>> 37d000e64b8d572a70ac10161fe3b83070c547ff
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	//create_ui();
+	create_ui();
 
 	/*surface2->setFont("Font/Datalegreya-Thin.otf");
 	surface2->setBackground(glm::vec4(1, 1, 0.4, 0.3));
@@ -140,7 +136,7 @@ int main(int argc, char **argv)
 	button->addSurface(surface2);*/
 	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 
-	/*Window                      window(1290, 800);
+	Window                      window(1290, 800);
 	window.captureMouse(false);
 
 	std::cout << "[OpenGL]\nVendor: " << glGetString(GL_VENDOR) << "\nRenderer: ";
@@ -202,7 +198,7 @@ int main(int argc, char **argv)
 		wavefront3->setPosition(glm::vec3(0, 1, 0) + wavefront3->getPosition());
 		std::cout << "Coucou\n";
 	});*/
-/*
+
 	for (float x = 0; x < 0; x++)
 		for (float y = 0; y < 15; y++)
 			for (float z = 0; z < 20; z++) {
@@ -258,11 +254,11 @@ int main(int argc, char **argv)
 	fse::renderer::ObjectPicker picker(1290, 800);
 
 	std::map<int, bool> key;
-*/
+
 	while (1)
 	{
 		update_ui(windowUI);
-		/*window.makeContextCurrent();
+		window.makeContextCurrent();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		picker.clean();
@@ -384,7 +380,6 @@ int main(int argc, char **argv)
 				}
 			}
 		} // end event polling
-		*/
 	}
 
 	return (0);
