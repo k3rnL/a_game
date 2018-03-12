@@ -1,10 +1,10 @@
 #version 330 core
 
-uniform unsigned int id;
+uniform uint id;
 
 layout(location = 0) out uvec4 out_color;
 
-void main() 
+void main()
 {
 float a = id;
 	uvec4 color;
@@ -12,7 +12,7 @@ float a = id;
 	color.y = (id & 0x00ff00u) >>  8;
 	color.z = (id & 0x0000ffu) >>  0;
 	color.w = uint(255);
-	
+
 	out_color = color;
 	return;
 }
