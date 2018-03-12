@@ -52,8 +52,6 @@ Object *picked_obj = 0;
 fse::ui::Surface *create_list()
 {
 	fse::ui::Layout *layout = new fse::ui::LayoutVertical();
-	layout->setMaximumSize(glm::vec2(200, 600));
-	layout->setSize(glm::vec2(200, 600));
 	layout->setBackground(glm::vec4(0.2, 0.2, 0.2, 1));
 
 	float size = 5;
@@ -63,7 +61,7 @@ fse::ui::Surface *create_list()
 			s->setBackground(glm::vec4(0.25, 0.25, 0.25, 1.));
 		else
 			s->setBackground(glm::vec4(0.3, 0.3, 0.3, 1.));
-		s->setMaximumSize(glm::vec2(0, 50));
+		s->setBehavior(new fse::ui::Surface::FitTo(glm::vec2(0, 50)));
 		layout->addSurface(s);
 		fse::ui::Text *t = new fse::ui::Text();
 		t->setText("|Panel " + std::to_string((int)i));
@@ -77,20 +75,19 @@ fse::ui::Text	*label_pos;
 
 void create_ui() {
 	fse::ui::Layout *layout = new fse::ui::LayoutHorizontal();
-	layout->setSize(glm::vec2(800, 600));
 	layout->addSurface(create_list());
 
 	fse::ui::Layout *surf = new fse::ui::LayoutVertical();
 	surf->setBackground(glm::vec4(0.4, 0.4, 0.4, 1));
+	surf->setBehavior(new fse::ui::Surface::FitTo(glm::vec2(200, 0)));
 	label_pos = new fse::ui::Text();
 	label_pos->setFont("Font/asman.ttf");
-	label_pos->setMaximumSize(glm::vec2(0, 20));
 	label_pos->setSize(glm::vec2(110, 20));
-	label_pos->setBehavior(fse::ui::Surface::DEFAULT);
 	surf->addSurface(label_pos);
 
-	layout->addSurface(surf);
-	surface->addSurface(layout);
+	//layout->addSurface(surf);
+	//surface->addSurface(layout);
+	surface->addSurface(surf);
 }
 
 void update_ui(Window &window) {
@@ -120,8 +117,16 @@ int main(int argc, char **argv)
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	surface = new fse::ui::Surface();
+<<<<<<< HEAD
 	surface->setSize(glm::vec2(800, 600));
 	surface->setBackground(glm::vec4(0.4,0.4,0.4,1.0));
+=======
+	fse::ui::Surface::Bound bound;
+	bound.size = glm::vec2(800, 600);
+	bound.pos = glm::vec2(0);
+	surface->setBound(bound);
+	surface->setBackground(glm::vec4(0.1, 0.1, 0.1, 1));
+>>>>>>> 37d000e64b8d572a70ac10161fe3b83070c547ff
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	//create_ui();
