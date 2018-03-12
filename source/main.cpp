@@ -93,10 +93,12 @@ void create_ui() {
 	surface->addSurface(layout);
 }
 
-void update_ui(Window &window, fse::scene::SceneManager &scene) {
+void update_ui(Window &window) {
 	window.makeContextCurrent();
 	SDL_Event event;
-	while (window.pollEvent(event));
+	while (window.pollEvent(event)) {
+		if (event.window.event)
+	}
 	if (picked_obj) {
 		label_pos->setText("pos: " + std::to_string(picked_obj->getPosition().x) + "\t" + std::to_string(picked_obj->getPosition().y) + "\t" + std::to_string(picked_obj->getPosition().z));
 	}
@@ -119,9 +121,10 @@ int main(int argc, char **argv)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	surface = new fse::ui::Surface();
 	surface->setSize(glm::vec2(800, 600));
+	surface->setBackground(glm::vec4(0.4,0.4,0.4,1.0));
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	create_ui();
+	//create_ui();
 
 	/*surface2->setFont("Font/Datalegreya-Thin.otf");
 	surface2->setBackground(glm::vec4(1, 1, 0.4, 0.3));
@@ -132,7 +135,7 @@ int main(int argc, char **argv)
 	button->addSurface(surface2);*/
 	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 
-	Window                      window(1290, 800);
+	/*Window                      window(1290, 800);
 	window.captureMouse(false);
 
 	std::cout << "[OpenGL]\nVendor: " << glGetString(GL_VENDOR) << "\nRenderer: ";
@@ -194,7 +197,7 @@ int main(int argc, char **argv)
 		wavefront3->setPosition(glm::vec3(0, 1, 0) + wavefront3->getPosition());
 		std::cout << "Coucou\n";
 	});*/
-
+/*
 	for (float x = 0; x < 0; x++)
 		for (float y = 0; y < 15; y++)
 			for (float z = 0; z < 20; z++) {
@@ -250,11 +253,11 @@ int main(int argc, char **argv)
 	fse::renderer::ObjectPicker picker(1290, 800);
 
 	std::map<int, bool> key;
-
+*/
 	while (1)
 	{
-		update_ui(windowUI, scene);
-		window.makeContextCurrent();
+		update_ui(windowUI);
+		/*window.makeContextCurrent();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		picker.clean();
@@ -303,7 +306,7 @@ int main(int argc, char **argv)
 		{
 			if (event.type == SDL_MOUSEBUTTONDOWN) {
 				if (event.button.button == SDL_BUTTON_LEFT) {
-					
+
 					//DynamicObject *obj = scene.addObject("Ressource/egypt_table/Egy1.obj", 4);
 					DynamicObject *obj = scene.addObject("Ressource/cube.obj", 1);
 					obj->setPosition(camera.getPosition() + camera.getDirection() * 3);
@@ -376,6 +379,7 @@ int main(int argc, char **argv)
 				}
 			}
 		} // end event polling
+		*/
 	}
 
 	return (0);
