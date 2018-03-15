@@ -67,6 +67,8 @@ fse::ui::Surface *create_list()
 		fse::ui::Text *t = new fse::ui::Text();
 		t->setText("|Panel " + std::to_string((int)i));
 		t->setFont("Font/Datalegreya-Thin.otf");
+		t->setBackground(glm::vec4(1));
+		t->setBehavior(new fse::ui::Surface::Margin(5));
 		s->addSurface(t);
 	}
 	return (layout);
@@ -93,6 +95,9 @@ void create_ui() {
 
 void update_ui(Window &window) {
 	window.makeContextCurrent();
+	static fse::ui::Drawer *drawer = 0;
+	if (drawer == 0)
+		drawer = new fse::ui::Drawer(glm::vec2(800, 600));
 	SDL_Event event;
 	while (window.pollEvent(event)) {
 		//if (event.window.event)
@@ -101,7 +106,7 @@ void update_ui(Window &window) {
 		label_pos->setText("pos: " + std::to_string(picked_obj->getPosition().x) + "\t" + std::to_string(picked_obj->getPosition().y) + "\t" + std::to_string(picked_obj->getPosition().z));
 	}
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	surface->draw();
+	surface->draw(*drawer);
 	window.flipScreen();
 }
 
