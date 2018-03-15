@@ -4,8 +4,8 @@ uniform vec4 color;
 uniform sampler2D font;
 out vec4 color_out;
 
-in vec2 pos;
+in vec2 uv;
 
 void main(){
-  color_out = vec4(1, 1, 1, texture2D(font, pos.xy).r) * color;
+  color_out = vec4(1, 1, 1, texture2D(font, uv).r) * color;
 }

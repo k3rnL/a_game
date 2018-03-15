@@ -2,12 +2,12 @@
 
 
 layout(location = 0) in vec3 vertex;
+layout(location = 1) in vec2 uv_buffer;
 
-out vec2 pos;
+out vec2 uv;
 
 void main(){
 
-    gl_Position =  vec4(vertex, 1);
-	pos = (vertex.xy * 0.5) + 0.5;
-	pos.y *= -1;
+    gl_Position =  vec4(vertex * vec3(1,-1,1), 1);
+	uv = uv_buffer;
 }
