@@ -2,7 +2,7 @@
  * @Author: danielb
  * @Date:   2017-07-22T23:35:22+02:00
  * @Last modified by:   daniel_b
- * @Last modified time: 2018-03-12T20:30:18+01:00
+ * @Last modified time: 2018-03-16T21:09:16+01:00
  */
 
 #include <fse/Window.hpp>
@@ -63,12 +63,12 @@ fse::ui::Surface *create_list()
 		else
 			s->setBackground(glm::vec4(0.3, 0.3, 0.3, 1.));
 		s->setBehavior(new fse::ui::Surface::FitTo(glm::vec2(0, 50)));
+		s->setBehavior(new fse::ui::Surface::Margin(5));
 		layout->addSurface(s);
 		fse::ui::Text *t = new fse::ui::Text();
 		t->setText("|Panel " + std::to_string((int)i));
 		t->setFont("Font/Datalegreya-Thin.otf");
 		t->setBackground(glm::vec4(1));
-		t->setBehavior(new fse::ui::Surface::Margin(5));
 		s->addSurface(t);
 	}
 	return (layout);
@@ -81,21 +81,29 @@ void create_ui() {
 	layout->addSurface(create_list());
 
 	fse::ui::Layout *surf = new fse::ui::LayoutVertical();
-	surf->setBackground(glm::vec4(0.4, 0.4, 0.4, 1));
-	surf->setBehavior(new fse::ui::Surface::FitTo(glm::vec2(200, 0)));
-	label_pos = new fse::ui::Text();
-	label_pos->setFont("Font/asman.ttf");
-	label_pos->setSize(glm::vec2(110, 20));
-	surf->addSurface(label_pos);
+	surf->setBackground(glm::vec4(0, 0.4, 0.4, 1));
+	surf->setBehavior(new fse::ui::Surface::Fill());
+	fse::ui::Button *button = new fse::ui::Button();
+	button->setBehavior(new fse::ui::Surface::RelativePosition(glm::vec2(50,50)));
+	button->setBehavior(new fse::ui::Surface::FitTo(glm::vec2(180,30)));
+	button->setBackground(glm::vec4(0.5,0.5,0.55, 1));
+	surf->addSurface(button);
+	fse::ui::Text 	*text = new fse::ui::Text();
+	text->setFont("Font/Datalegreya-Thin.otf");
+	// text->setBehavior(new fse::ui::Surface::FitTo(glm::vec2(0, 16)));
+	text->setBehavior(new fse::ui::Surface::Fill());
+	text->setText("Update shader");
+	button->addSurface(text);
+	button->setOnMouseClick([button](int x, int y){button->getShader()->updateShader();});
 
-	//layout->addSurface(surf);
+	layout->addSurface(surf);
 	surface->addSurface(layout);
 	// surface->addSurface(surf);
 }
+static fse::ui::Drawer *drawer = 0;
 
 void update_ui(Window &window) {
 	window.makeContextCurrent();
-	static fse::ui::Drawer *drawer = 0;
 	if (drawer == 0)
 		drawer = new fse::ui::Drawer(glm::vec2(800, 600));
 	SDL_Event event;
@@ -131,6 +139,7 @@ int main(int argc, char **argv)
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	create_ui();
+	windowUI.setOnMouseClick([](int x, int y){drawer->getShader()->updateShader();std::cout << "bwai\n";});
 
 	/*surface2->setFont("Font/Datalegreya-Thin.otf");
 	surface2->setBackground(glm::vec4(1, 1, 0.4, 0.3));
