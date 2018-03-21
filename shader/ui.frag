@@ -26,7 +26,7 @@ void main(){
   // return;
   vec2 uv = varying_uv;
   // uv += 0.5;
-  float value = roundedFrame((uv-0.5) * dimension, 150);
+  float value = roundedFrame((uv-0.5) * dimension, 15);
   //value = roundedFrame(gl_FragCoord.xy, vec2(1), 0.25, 0.1);
   // if (value < 0.1)
     color_out = vec4(color.xyz, value+0);
