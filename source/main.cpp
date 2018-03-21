@@ -63,12 +63,12 @@ fse::ui::Surface *create_list()
 		else
 			s->setBackground(glm::vec4(0.3, 0.3, 0.3, 1.));
 		s->setBehavior(new fse::ui::Surface::FitTo(glm::vec2(0, 50)));
-		s->setBehavior(new fse::ui::Surface::Margin(5));
+		s->setBehavior(new fse::ui::Surface::Margin(0,0,5,0));
 		layout->addSurface(s);
 		fse::ui::Text *t = new fse::ui::Text();
+		t->setBehavior(new fse::ui::Surface::Margin(10, 0, 0, 0));
 		t->setText("|Panel " + std::to_string((int)i));
 		t->setFont("Font/Datalegreya-Thin.otf");
-		t->setBackground(glm::vec4(1));
 		s->addSurface(t);
 	}
 	return (layout);
@@ -89,12 +89,15 @@ void create_ui() {
 	button->setBackground(glm::vec4(0.5,0.5,0.55, 1));
 	surf->addSurface(button);
 	fse::ui::Text 	*text = new fse::ui::Text();
-	text->setFont("Font/Datalegreya-Thin.otf");
+	text->setCentered(true);
+	text->setFont("Font/Roboto-Regular.ttf");
 	// text->setBehavior(new fse::ui::Surface::FitTo(glm::vec2(0, 16)));
 	text->setBehavior(new fse::ui::Surface::Fill());
-	text->setText("Update shader");
+	text->setBehavior(new fse::ui::Surface::Margin(5));
+	text->setText("update shader");
 	button->addSurface(text);
-	button->setOnMouseClick([button](int x, int y){button->getShader()->updateShader();});
+	button->setOnMouseClick([button](int x, int y) {button->getShader()->updateShader(); std::cout << "in button\n"; });
+	button->setOnMouseClickReleased([button](int x, int y) {button->getShader()->updateShader(); std::cout << "in button\n"; });
 
 	layout->addSurface(surf);
 	surface->addSurface(layout);
@@ -134,12 +137,14 @@ int main(int argc, char **argv)
 	fse::ui::Surface::Bound bound;
 	bound.size = glm::vec2(800, 600);
 	bound.pos = glm::vec2(0);
-	surface->setBound(bound);
+	surface->setBoundary(bound);
 	surface->setBackground(glm::vec4(0.1, 0.1, 0.1, 1));
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	create_ui();
-	windowUI.setOnMouseClick([](int x, int y){drawer->getShader()->updateShader();std::cout << "bwai\n";});
+	windowUI.setOnMouseClick([](int x, int y) {surface->onClick(x, y); drawer->getShader()->updateShader(); std::cout << "bwai\n"; });
+	windowUI.setOnMouseClickReleased([](int x, int y) {surface->onClickReleased(x,y); drawer->getShader()->updateShader(); std::cout << "bwai\n"; });
+
 
 	/*surface2->setFont("Font/Datalegreya-Thin.otf");
 	surface2->setBackground(glm::vec4(1, 1, 0.4, 0.3));
